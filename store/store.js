@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from '@react-native-async-storage/async-storage';
+import serverReducer from '../components/slices/ServerSlice';
 
 // Configuration de la persistance
 const persistConfig = {
@@ -11,6 +12,7 @@ const persistConfig = {
 
 // Création des reducers
 const rootReducer = combineReducers({
+    server: serverReducer,
 });
 
 // Création du reducer persistant
