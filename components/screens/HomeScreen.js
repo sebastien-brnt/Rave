@@ -3,15 +3,17 @@ import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import { addServer } from '../slices/ServerSlice';
 import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function HomeScreen() {
-    const dispatch = useDispatch();
+    const navigation = useNavigation();
     const [ip, setIp] = useState(''); // IP du serveur
     const [port, setPort] = useState(''); // Port du serveur
 
     async function isAvailable() {
         try {
-            const response = await fetch('http://10.7.1.52:8000');
+            const response = await fetch(`http://${ip}:${port}`);
             if (response.ok) {
               console.log('Connexion réussie');
               return true;
@@ -29,9 +31,6 @@ export default function HomeScreen() {
     async function checkConnexion() {
         // Vérification de la connexion
         if (await isAvailable()) {
-            // Ajout du serveur à la liste des serveurs
-            dispatch (addServer({ip: ip, port: port}));
-
             // Affichage d'un toast de succès
             Toast.show({
                 type: 'success',
@@ -39,8 +38,12 @@ export default function HomeScreen() {
                 text2: 'Nous avons réussi à nous connecter à serveur.'
             });
 
-            // Redirection vers la page d'enregistrement
-            // navigation.navigate('Accueil');
+            // Redirection vers la page d'enregistrement des audios
+            navigation.navigate('Audio');
+
+            // Ajout du serveur à la liste des serveurs
+            // const dispatch = useDispatch();
+            // dispatch (addServer({ip: ip, port: port}));
         } else {
             // Affichage un toast d'erreur
             Toast.show({
@@ -62,14 +65,14 @@ export default function HomeScreen() {
             <TextInput 
                 style={styles.input} 
                 placeholder="IP su serveur"
-                onChange={(value) => setIp(value)}
+                onChangeText={setIp}
                 />
             
             {/* Champs de saisie du port */}
             <TextInput 
                 style={styles.input} 
                 placeholder="Port su serveur" 
-                onChange={(value) => setPort(value)}
+                onChangeText={setPort}
                 />
 
             {/* Bouton de test de connexion */}
