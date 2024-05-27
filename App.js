@@ -10,6 +10,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 // Import des pages
 import HomeScreen from './components/screens/HomeScreen';
 import AudioScreen from './components/screens/AudioScreen';
+import ConverterScreen from './components/screens/ConverterScreen';
 
 export default function App() {
   const Stack = createNativeStackNavigator(); // Permet de définir la pile de navigation
@@ -17,7 +18,7 @@ export default function App() {
 
   return (
     // Logique de navigation de l'application :
-    //    - 2 écrans : HomeScreen, AudioScreen
+    //    - 3 écrans : HomeScreen, AudioScreen, ConverterScreen
     //    - Ecran de démarrage : HomeScreen
 
     <Provider store={store}>
@@ -43,6 +44,17 @@ export default function App() {
                 headerTitle: "Audio",
                 icon: ({ focused, color, size }) => (
                   <Icon name="playcircleo" size={size} color={color} />
+                ),
+              }}>
+            </Tab.Screen>
+
+            <Tab.Screen 
+              name="Conversion" 
+              component={ConverterScreen}
+              options={{ 
+                headerTitle: "Conversion",
+                icon: ({ focused, color, size }) => (
+                  <Icon name="retweet" size={size} color={color} />
                 ),
               }}>
             </Tab.Screen>
