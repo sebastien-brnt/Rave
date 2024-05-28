@@ -1,13 +1,17 @@
-import { View, Text, StyleSheet, Button, TextInput, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
+import Toast from 'react-native-toast-message';
 import CustomButton from '../common/CustomButton';
+
 
 export default function AudioScreen() {
     const [sound, setSound] = useState(null); // Etat pour le son
     const [recording, setRecording] = useState(null); // Etat pour l'enregistrement
     const [recordingUri, setRecordingUri] = useState(null); // Etat pour l'URI de l'enregistrement
     const [permissionResponse, requestPermission] = Audio.usePermissions(); // Etat pour la réponse de la demande de permission
+    const [fileName, setFileName] = useState("")
 
     // Fonction pour démarrer l'enregistrement
     async function startRecording() {
@@ -74,6 +78,56 @@ export default function AudioScreen() {
         }
     }
 
+    // Fonction de sauvegarde de l'audio dans le téléphone
+    async function saveRecording() {
+        if (!recordingUri || !fileName) {
+            console.log('Saving error, no record or file name')
+            Toast.show({
+                type: 'error',
+                text1: 'Erreur d\'enregistrement',
+                text2: 'Aucun audio ou nom de fichier'
+            });
+            return;
+        }
+
+        try {
+            // Path du dossier d'enregistrement
+            const directory = `${FileSystem.documentDirectory}recordings/`;
+
+            // Création du sous-dossier s'il n'existe pas
+            const dirInfo = await FileSystem.getInfoAsync(directory);
+            if (!dirInfo.exists) {
+                await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
+            }
+
+            // URI
+            const fileUri = `${directory}${fileName}.m4a`;
+            
+            // Vérification de l'existence du fichier
+            const fileInfo = await FileSystem.getInfoAsync(fileUri);
+            if (fileInfo.exists) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Erreur d\'enregistrement',
+                    text2: 'Le nom du fichier est déjà utilisé'
+                });
+                return;
+            }
+
+            // Enregistrement
+            await FileSystem.moveAsync({
+                from: recordingUri,
+                to: fileUri
+            });
+
+            console.log('Recording saved to:', fileUri);
+            setRecordingUri(null); // Réinitialise l'URI de l'enregistrement après la sauvegarde
+            setFileName(''); // Réinitialise le nom du fichier après la sauvegarde
+        } catch (error) {
+            console.error('Error saving recording:', error);
+        }
+    }
+
     useEffect(() => {
         return sound ? () => {
             // Libérer la mémoire allouée à l'audio précédent
@@ -84,6 +138,10 @@ export default function AudioScreen() {
 
     return (
         <View style={styles.container}>
+            <View style={styles.toast}>
+                <Toast />
+            </View>
+            
             <Text style={styles.title}>Enregistrement d'un audio</Text>
 
             <View style={styles.row}>
@@ -109,10 +167,15 @@ export default function AudioScreen() {
             <Text style={styles.titleSecond}>Sauvegarde dans le téléphone</Text>
 
             {/* Champs de saisie du nom de l'audio à enregistrer */}
-            <TextInput placeholder="Nom du fichier audio" style={styles.fileName}/>
+            <TextInput 
+                placeholder="Nom du fichier audio" 
+                style={styles.fileName}
+                onChangeText={setFileName}
+                value={fileName}
+                />
 
             {/* Bouton d'enregistrement de l'audio */}
-            <CustomButton style={styles.buttonSave} title="Sauvegarder l'audio" event={() => {}} />
+            <CustomButton style={styles.buttonSave} title="Sauvegarder l'audio" event={saveRecording} />
         </View>
     );
 }
@@ -121,6 +184,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20
+    },
+    toast: {
+        zIndex: 999,
     },
     row: {
         flexDirection: 'row',
@@ -143,7 +209,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         backgroundColor: '#fff',
         paddingHorizontal: 10,
-        paddingVertical: 15,
+        paddingVertical: 13,
         borderRadius: 10
     },
     recordingButton: {
