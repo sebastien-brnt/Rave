@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Button, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Button, TextInput, TouchableOpacity, Image } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Audio } from 'expo-av';
 import CustomButton from '../common/CustomButton';
@@ -11,7 +11,7 @@ export default function AudioScreen() {
 
     // Fonction pour démarrer l'enregistrement
     async function startRecording() {
-        console.log('test')
+        console.log('Start recording...')
         try {
             // Demander la permission d'accéder au micro si nécessaire
             if (permissionResponse?.status !== 'granted') {
@@ -38,6 +38,7 @@ export default function AudioScreen() {
 
     // Fonction pour arrêter l'enregistrement
     async function stopRecording() {
+        console.log('Stop recording...')
         try {
             if (!recording) return;
             await recording.stopAndUnloadAsync();
@@ -85,18 +86,33 @@ export default function AudioScreen() {
         <View style={styles.container}>
             <Text style={styles.title}>Enregistrement d'un audio</Text>
 
-            {/* Bouton de démarrage et d'arrêt et de lecture de l'enregistrement */}
-            <CustomButton style={styles.button} title="Démarrer l'enregistrement" event={startRecording} />
-            <CustomButton style={styles.button} title="Arrêter l'enregistrement" event={stopRecording} />
+            <View style={styles.row}>
+                {/* Bouton de démarrage et d'arrêt et de lecture de l'enregistrement */}
+                <TouchableOpacity style={styles.recordingButton} onPress={startRecording}>
+                    <Image 
+                        source={require('../../assets/play.png')}
+                        style={{width: 45, height: 60, alignItems: 'center', justifyContent: 'center'}}
+                    />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.recordingButton} onPress={stopRecording}>
+                    <Image 
+                        source={require('../../assets/stop.png')}
+                        style={{width: 50, height: 50}}
+                    />
+                </TouchableOpacity>
+            </View>
 
             {/* Affichage du bouton de lecture si un audio a été enregistré */}
             {recordingUri && <CustomButton title="Lire l'enregistrement" event={playSound} />}
+
+            <Text style={styles.titleSecond}>Sauvegarde dans le téléphone</Text>
 
             {/* Champs de saisie du nom de l'audio à enregistrer */}
             <TextInput placeholder="Nom du fichier audio" style={styles.fileName}/>
 
             {/* Bouton d'enregistrement de l'audio */}
-            <CustomButton style={styles.button} title="Enregistrer l'audio" event={() => {}} />
+            <CustomButton style={styles.buttonSave} title="Sauvegarder l'audio" event={() => {}} />
         </View>
     );
 }
@@ -104,18 +120,39 @@ export default function AudioScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        padding: 20
+    },
+    row: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 20,
+        marginBottom: 20
     },
     title: {
         fontSize: 18,
         fontWeight: 'bold',
+        marginBottom: 30,
+    },
+    titleSecond: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: 50,
+        marginBottom: 20,
     },
     fileName: {
-        marginTop: 20,
         marginBottom: 10,
+        backgroundColor: '#fff',
+        paddingHorizontal: 10,
+        paddingVertical: 15,
+        borderRadius: 10
     },
-    button: {
-        marginVertical: 5
+    recordingButton: {
+        padding: 20,
+        borderRadius: 10,
+        flex: 1,
+        borderWidth: 2,
+        borderColor: '#6A5ACD',
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });
