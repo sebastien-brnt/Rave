@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Button, TextInput } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Audio } from 'expo-av';
+import CustomButton from '../common/CustomButton';
 
 export default function AudioScreen() {
     const [sound, setSound] = useState(null); // Etat pour le son
@@ -10,6 +11,7 @@ export default function AudioScreen() {
 
     // Fonction pour démarrer l'enregistrement
     async function startRecording() {
+        console.log('test')
         try {
             // Demander la permission d'accéder au micro si nécessaire
             if (permissionResponse?.status !== 'granted') {
@@ -84,17 +86,17 @@ export default function AudioScreen() {
             <Text style={styles.title}>Enregistrement d'un audio</Text>
 
             {/* Bouton de démarrage et d'arrêt et de lecture de l'enregistrement */}
-            <Button title="Démarrer l'enregistrement" onPress={startRecording} />
-            <Button title="Arrêter l'enregistrement" onPress={stopRecording} />
+            <CustomButton style={styles.button} title="Démarrer l'enregistrement" event={startRecording} />
+            <CustomButton style={styles.button} title="Arrêter l'enregistrement" event={stopRecording} />
 
             {/* Affichage du bouton de lecture si un audio a été enregistré */}
-            {recordingUri && <Button title="Lire l'enregistrement" onPress={playSound} />}
+            {recordingUri && <CustomButton title="Lire l'enregistrement" event={playSound} />}
 
             {/* Champs de saisie du nom de l'audio à enregistrer */}
-            <TextInput placeholder="Nom du fichier audio" />
+            <TextInput placeholder="Nom du fichier audio" style={styles.fileName}/>
 
             {/* Bouton d'enregistrement de l'audio */}
-            <Button title="Enregistrer l'audio" onPress={() => {}} />
+            <CustomButton style={styles.button} title="Enregistrer l'audio" event={() => {}} />
         </View>
     );
 }
@@ -108,5 +110,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    fileName: {
+        marginTop: 20,
+        marginBottom: 10,
+    },
+    button: {
+        marginVertical: 5
     }
 });

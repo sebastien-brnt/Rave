@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { addServer } from '../slices/ServerSlice';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import CustomButton from '../common/CustomButton';
 
 
 export default function HomeScreen() {
@@ -76,10 +77,7 @@ export default function HomeScreen() {
                 />
 
             {/* Bouton de test de connexion */}
-            <Button 
-                style={styles.button} 
-                title="Tester la connexion" 
-                onPress={() => checkConnexion()} />
+            <CustomButton style={styles.button} title="Tester la connexion" event={checkConnexion} />
 
         </View>
     );
@@ -106,6 +104,6 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     button: {
-        marginVertical: 20,
-    },
+        marginVertical: 15
+    }
 });
