@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Button, Image } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import { addServer } from '../slices/ServerSlice';
@@ -60,7 +60,10 @@ export default function HomeScreen() {
             <Toast />
 
             {/* Titre de l'application */}
-            <Text style={styles.title}>Rave</Text>
+            <Image 
+                source={require('../../assets/logo-rave.png')}
+                style={styles.logo}
+            />
             
             {/* Champs de saisie pour l'IP */}
             <TextInput 
@@ -105,5 +108,10 @@ const styles = StyleSheet.create({
     },
     button: {
         marginVertical: 15
+    },
+    logo: {
+        height: 100, 
+        objectFit: 'contain',
+        marginBottom: 30
     }
 });
