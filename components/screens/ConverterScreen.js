@@ -1,60 +1,44 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { useEffect, useState } from 'react';
-import * as FileSystem from 'expo-file-system';
+import React from "react";
+import Swiper from "react-native-screens-swiper";
+import AudioSelector from "./AudioSelector";
+import ModelSelector from "./ModelSelector";
+import ConvertedAudio from "./ConvertedAudio";
+
 
 export default function ConverterScreen() {
-    const [recordings, setRecordings] = useState([])
-
-    // Fonction pour récupérer les enregistrements
-    async function getRecordings() {
-        try {
-            // Path du dossier d'enregistrement
-            const directory = `${FileSystem.documentDirectory}recordings/`;
-
-            // Vérification de l'existence du dossier
-            const dirInfo = await FileSystem.getInfoAsync(directory);
-            if (!dirInfo.exists) {
-                console.log('No recordings directory found');
-                return [];
-            }
-
-            // Lire le contenu du dossier
-            const files = await FileSystem.readDirectoryAsync(directory);
-
-            // Générer les URI des fichiers
-            const recordings = files.map(file => ({
-                name: file,
-                uri: `${directory}${file}`
-            }));
-
-            console.log('Recordings retrieved:', recordings);
-            setRecordings(recordings); // Sauvegarde des records
-        } catch (error) {
-            console.error('Error retrieving recordings:', error);
-        }
-    }
-
-    useEffect(() => {
-        // Récupération des records
-        getRecordings();
-    }, []);
+    const data = [
+        {
+            component: () => <AudioSelector />,
+            tabLabel: "Sélection Audio",
+        },
+        {
+            component: () => <ModelSelector />,
+            tabLabel: "Sélection Modèle",
+        },
+        {
+            component: () => <ConvertedAudio />,
+            tabLabel: "Audios enregistrés",
+        },
+    ];
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Conversion de l'audio</Text>
-            <Text>Étape 1</Text>
-        </View>
+        <Swiper
+            data={data}
+            isStaticPills={true}
+            style={styles}
+        />
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+// more about styling below
+const styles = {
+    borderActive: {
+        borderColor: '#6A5ACD',
     },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    }
-});
+    pillLabel: {
+        color: 'gray',
+    },
+    activeLabel: {
+        color: '#6A5ACD',
+    },
+};
