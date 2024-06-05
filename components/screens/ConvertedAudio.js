@@ -1,9 +1,13 @@
 import { View, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export default function AudioSelector() {
+
+export default function ConvertedAudio() {
+    const navigation = useNavigation();
+
     return (
         <View style={styles.container}>
-            <Text>Audios convertis enregistrés</Text>
+            <Text style={styles.title} >Audio convertis enregistrés</Text>
         </View>
     );
 }
@@ -11,7 +15,11 @@ export default function AudioSelector() {
 const styles = {
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
+        padding: 30
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 30
+    },
 };

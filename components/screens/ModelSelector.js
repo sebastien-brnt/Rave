@@ -1,9 +1,17 @@
 import { View, Text } from 'react-native';
+import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function ModelSelector() {
+    const navigation = useNavigation();
+
+    // statepour stocker le modèle sélectionné
+    const [model, setModel] = useState(null);
+
     return (
         <View style={styles.container}>
-            <Text>Sélection du modèle</Text>
+            <Text style={styles.title} >Sélection du model</Text>
         </View>
     );
 }
@@ -11,7 +19,11 @@ export default function ModelSelector() {
 const styles = {
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
+        padding: 30
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 30
+    },
 };
