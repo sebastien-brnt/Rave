@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import * as FileSystem from 'expo-file-system';
 import CustomButton from '../common/CustomButton';
 import { useNavigation } from '@react-navigation/native';
+import { Audio } from 'expo-av';
 
 
 export default function AudioSelector() {
@@ -36,34 +37,44 @@ export default function AudioSelector() {
         }
     }
 
-    // Chargement des fichiers audio
-    useEffect(() => {
-        loadAudioFiles();
-        console.log('Audio files loaded', audioFiles);
-    }, []);
+    // Fonction pour lire un fichier Audio
+    async function playAudio(file) {
+        // Path du fichier audio
+        const path = `${FileSystem.documentDirectory}recordings/${file}`;
 
+        // Création d'un objet audio
+        const { sound } = await Audio.Sound.createAsync(
+            { uri: path }
+        );
+
+        // Lecture du fichier audio
+        await sound.playAsync();
+    }
+
+    // Chargement des fichiers audio
     useEffect(() => {
         const focusListener = () => {
             loadAudioFiles();
         };
 
-        // Ajoutez un listener pour recharger les fichiers lorsque l'écran devient actif
+        // Ajout d'un listener pour recharger les fichiers lorsque l'écran devient actif
         const unsubscribe = navigation.addListener('focus', focusListener);
 
-        // Cleanup le listener lors du démontage du composant
+        // Nettoyage du listener lors du démontage du composant
         return unsubscribe;
     }, [navigation]);
 
     
     return (
         <View style={styles.container}>
-            <Text>Sélection de l'audio</Text>
+            <Text style={styles.title} >Sélection de l'audio</Text>
 
             {/* Liste des fichiers audio */}
             {audioFiles.map((file, index) => (
-                <View key={index}>
+                <View key={index} style={styles.item} >
                     <Text>{file}</Text>
-                    <CustomButton title="Supprimer" event={() => deleteAudioFile(file)} />
+                    <CustomButton title="Lire" event={() => playAudio(file)} />
+                    <CustomButton title="Supprimer" event={() => deleteAudioFile(file)}/>
                 </View>
             ))}
         </View>
@@ -73,7 +84,18 @@ export default function AudioSelector() {
 const styles = {
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
+        padding: 30
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 30
+    },
+    item: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginVertical: 10,
+        gap: 20
+    },
 };
