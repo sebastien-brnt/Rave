@@ -1,9 +1,10 @@
 import { View, Text } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, act } from 'react';
 import * as FileSystem from 'expo-file-system';
 import CustomButton from '../common/CustomButton';
 import { useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 
 export default function AudioSelector() {
@@ -73,8 +74,11 @@ export default function AudioSelector() {
             {audioFiles.map((file, index) => (
                 <View key={index} style={styles.item} >
                     <Text>{file}</Text>
-                    <CustomButton title="Lire" event={() => playAudio(file)} />
-                    <CustomButton title="Supprimer" event={() => deleteAudioFile(file)}/>
+                    <View style={styles.actions}>
+                        <Icon name="play-circle-outline" size={25} color={'#6A5ACD'} onPress={() => playAudio(file)} />
+                        <Icon name="trash-outline" size={25} color={'red'} onPress={() => deleteAudioFile(file)} />
+                        <CustomButton title="Sélectionner" />
+                    </View>
                 </View>
             ))}
         </View>
@@ -98,4 +102,9 @@ const styles = {
         marginVertical: 10,
         gap: 20
     },
+    actions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10
+    }
 };
