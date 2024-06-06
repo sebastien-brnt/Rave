@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     button: {
-        marginVertical: 15
+        marginVertical: 15,
     },
     logo: {
         height: 100, 

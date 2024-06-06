@@ -5,10 +5,14 @@ import CustomButton from '../common/CustomButton';
 import { useNavigation } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectSound, selectedSoundSelector } from '../slices/SoundSlice';
 
 
 export default function AudioSelector() {
     const navigation = useNavigation();
+    const dispatch = useDispatch();
+    const [ selectedSound, setSelectedSound ] = useState(null);
 
     // State pour stocker la liste des fichiers audio
     const [audioFiles, setAudioFiles] = useState([]);
@@ -52,10 +56,40 @@ export default function AudioSelector() {
         await sound.playAsync();
     }
 
+    // Fonction pour selectionner le fichier audio dans le SoundSlice
+    async function selectAudio(file) {
+        // Path du fichier audio
+        const path = `${FileSystem.documentDirectory}recordings/${file}`;
+
+        // Création d'un objet audio
+        const { sound } = await Audio.Sound.createAsync(
+            { uri: path }
+        );
+
+        // Enregistrement du fichier audio selectionné dans le SoundSlice
+        dispatch(selectSound(sound));
+        setSelectedSound(file);
+    }
+
+    // Fonction pour désélectionner le fichier audio dans le SoundSlice
+    async function deselectAudio() {
+        dispatch(selectSound(null));
+        setSelectedSound(null);
+    }
+
+    // Fonction pour récupérer le fichier audio sélectionné dans le SoundSlice
+    async function getSelectedAudio() {
+        // Récupération du fichier audio sélectionné
+        const selectedAudio = useSelector(selectedSoundSelector);
+        setSelectedSound(selectedAudio);
+    }
+
+
     // Chargement des fichiers audio
     useEffect(() => {
         const focusListener = () => {
             loadAudioFiles();
+            getSelectedAudio();
         };
 
         // Ajout d'un listener pour recharger les fichiers lorsque l'écran devient actif
@@ -77,7 +111,10 @@ export default function AudioSelector() {
                     <View style={styles.actions}>
                         <Icon name="play-circle-outline" size={25} color={'#6A5ACD'} onPress={() => playAudio(file)} />
                         <Icon name="trash-outline" size={25} color={'red'} onPress={() => deleteAudioFile(file)} />
-                        <CustomButton title="Sélectionner" />
+                        { selectedSound === file ? 
+                        <CustomButton style={styles.selectedButton} titleStyle={styles.selectedButtonTitle} title="Déselectionner" event={() => deselectAudio()} />
+                        :
+                        <CustomButton style={styles.selectButton} titleStyle={styles.selectButtonTitle} title="Sélectionner" event={() => selectAudio(file)} /> }
                     </View>
                 </View>
             ))}
@@ -106,5 +143,25 @@ const styles = {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10
+    },
+    selectButton: {
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderColor: '#6A5ACD',
+        paddingHorizontal: 10,
+        paddingVertical: 7,
+    },
+    selectButtonTitle: {
+        color: '#6A5ACD'
+    },
+    selectedButton: {
+        backgroundColor: '#6A5ACD',
+        borderWidth: 2,
+        borderColor: '#6A5ACD',
+        paddingHorizontal: 10,
+        paddingVertical: 7,
+    },
+    selectedButtonTitle: {
+        color: 'white'
     }
 };
