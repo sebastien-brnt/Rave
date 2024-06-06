@@ -100,8 +100,11 @@ export default function AudioScreen() {
                 await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
             }
 
+            // Slugify du nom du fichier
+            const cleanFileName = fileName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
             // URI
-            const fileUri = `${directory}${fileName}.m4a`;
+            const fileUri = `${directory}${cleanFileName}.m4a`;
             
             // Vérification de l'existence du fichier
             const fileInfo = await FileSystem.getInfoAsync(fileUri);

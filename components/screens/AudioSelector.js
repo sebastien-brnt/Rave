@@ -107,7 +107,7 @@ export default function AudioSelector() {
             {/* Liste des fichiers audio */}
             {audioFiles.map((file, index) => (
                 <View key={index} style={styles.item} >
-                    <Text>{file}</Text>
+                    <Text style={styles.fileName} numberOfLines={1} >{file}</Text>
                     <View style={styles.actions}>
                         <Icon name="play-circle-outline" size={25} color={'#6A5ACD'} onPress={() => playAudio(file)} />
                         <Icon name="trash-outline" size={25} color={'red'} onPress={() => deleteAudioFile(file)} />
@@ -163,5 +163,8 @@ const styles = {
     },
     selectedButtonTitle: {
         color: 'white'
+    },
+    fileName: {
+        flex: 1
     }
 };
