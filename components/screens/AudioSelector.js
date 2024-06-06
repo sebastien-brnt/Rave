@@ -1,5 +1,5 @@
-import { View, Text } from 'react-native';
-import { useState, useEffect, act } from 'react';
+import { View, Text, TextInput } from 'react-native';
+import { useState, useEffect } from 'react';
 import * as FileSystem from 'expo-file-system';
 import CustomButton from '../common/CustomButton';
 import { useNavigation } from '@react-navigation/native';
@@ -13,6 +13,8 @@ export default function AudioSelector() {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const [ selectedSound, setSelectedSound ] = useState(null);
+    const [ search, setSearch ] = useState("");
+    const [ searchResult, setSearchResult ] = useState(null);
 
     // State pour stocker la liste des fichiers audio
     const [audioFiles, setAudioFiles] = useState([]);
@@ -84,6 +86,19 @@ export default function AudioSelector() {
         setSelectedSound(selectedAudio);
     }
 
+    // Fonction pour rechercher un fichier audio 
+    async function searchAudio() {
+        // Path du dossier d'enregistrement
+        const directory = `${FileSystem.documentDirectory}recordings/`;
+        const files = await FileSystem.readDirectoryAsync(directory);
+
+        // Clean de la recherche
+        const cleanSearch = search.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+        const filteredFiles = files.filter(file => file.replace(/[^a-z0-9]/gi, '_').toLowerCase().includes(cleanSearch));
+        setSearchResult(filteredFiles[0]);
+    }
+
 
     // Chargement des fichiers audio
     useEffect(() => {
@@ -98,6 +113,11 @@ export default function AudioSelector() {
         // Nettoyage du listener lors du démontage du composant
         return unsubscribe;
     }, [navigation]);
+
+    // Recherche des fichiers audio
+    useEffect(() => {
+        searchAudio();
+    }, [search]);
 
     
     return (
@@ -118,6 +138,40 @@ export default function AudioSelector() {
                     </View>
                 </View>
             ))}
+
+            {/* Barre de recherche */}
+            <Text style={styles.titleSecond} >Rechercher un audio enregistré</Text>
+            
+            <View style={styles.searchBar}>
+                <TextInput 
+                    style={styles.searchInput} 
+                    placeholder="Rechercher un fichier audio"
+                    value={search}
+                    onChangeText={setSearch}
+                />
+                <Icon name="search" size={25} color={'#6A5ACD'} />
+            </View>
+
+            {/* Résultat de la recherche */}
+            { search && searchResult ?
+                <View>
+                    <Text style={styles.resultTitle}>Meilleur résultat :</Text>
+
+                    <View style={styles.item} >
+                        <Text style={styles.fileName} numberOfLines={1} >{searchResult}</Text>
+                        <View style={styles.actions}>
+                            <Icon name="play-circle-outline" size={25} color={'#6A5ACD'} onPress={() => playAudio(searchResult)} />
+                            <Icon name="trash-outline" size={25} color={'red'} onPress={() => deleteAudioFile(searchResult)} />
+                            { selectedSound === searchResult ? 
+                            <CustomButton style={styles.selectedButton} titleStyle={styles.selectedButtonTitle} title="Déselectionner" event={() => deselectAudio()} />
+                            :
+                            <CustomButton style={styles.selectButton} titleStyle={styles.selectButtonTitle} title="Sélectionner" event={() => selectAudio(searchResult)} /> }
+                        </View>
+                    </View> 
+                </View> 
+                :
+                search && !searchResult && <Text style={styles.noResult}>Aucun fichier audio trouvé</Text>
+            }
         </View>
     );
 }
@@ -131,6 +185,11 @@ const styles = {
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 30
+    },
+    titleSecond: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 40,
     },
     item: {
         flexDirection: 'row',
@@ -166,5 +225,26 @@ const styles = {
     },
     fileName: {
         flex: 1
+    },
+    searchBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth: 1,
+        borderColor: 'lightgrey',
+        borderRadius: 10,
+        padding: 10,
+        marginTop: 20
+    },
+    searchInput: {
+        flex: 1
+    },
+    noResult: {
+        marginTop: 20,
+        textAlign: 'center'
+    },
+    resultTitle: {
+        fontWeight: 'bold',
+        marginTop: 20
     }
 };
