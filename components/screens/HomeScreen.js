@@ -14,18 +14,24 @@ export default function HomeScreen() {
 
     async function isAvailable() {
         try {
-            const response = await fetch(`http://${ip}:${port}`);
-            if (response.ok) {
-              console.log('Connexion réussie');
-              return true;
-            } else {
-              console.error('Échec de la connexion. Statut de la réponse :', response.status);
-              return false;
+            const response = await fetch(`http://${ip}:${port}`, {
+                method: 'GET',
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-          } catch (error) {
-            console.error('Erreur lors de la connexion au serveur :', error);
-            return false;
-          }
+
+            // Lire le contenu brut de la réponse
+            const textResponse = await response.text();
+            if (textResponse.includes('Connexion sucess !')) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     }
     
 
