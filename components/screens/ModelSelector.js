@@ -6,12 +6,12 @@ import Toast from "react-native-toast-message";
 import * as FileSystem from "expo-file-system";
 import { selectedSoundSelector } from "../slices/SoundSlice";
 import { useSelector } from "react-redux";
+import ItemModel from "../models/ItemModel";
 
 export default function ModelSelector() {
   const navigation = useNavigation();
 
   // state pour stocker le modèle sélectionné
-  const [model, setModel] = useState(null);
   const [fileName, setFileName] = useState("");
   const [selectedSound, setSelectedSound] = useState(null);
   const [models, setModels] = useState([]);
@@ -20,7 +20,7 @@ export default function ModelSelector() {
   async function convertSound() {
     try {
       // Conversion de l'audio
-      await convertSoundApi(model);
+      await convertSoundApi();
 
       // Affichage du message de succès
       Toast.show({
@@ -60,29 +60,6 @@ export default function ModelSelector() {
     }
   };
 
-  const selectModel = async (modelName) => {
-    try {
-      const response = await fetch(
-        `http://192.168.1.13:8000/selectModel/${modelName}`,
-        {
-          method: "POST",
-        }
-      );
-      if (!response.ok) throw new Error("Network response was not ok");
-      const data = await response.text();
-      if (data.includes("selected")) {
-        console.log("Model selected:", modelName);
-        Toast.show({
-          type: "success",
-          text1: "Modèle sélectionné",
-          text2: `Le modèle ${modelName} a été sélectionné`,
-        });
-      }
-    } catch (error) {
-      console.error("Error selecting model:", error);
-    }
-  };
-
   // Fonction pour envoyer l'audio à l'API
   async function uploadSound() {
     try {
@@ -115,11 +92,10 @@ export default function ModelSelector() {
   }
 
   // Fonction de conversion de l'audio via l'api
-  async function convertSoundApi(model) {
+  async function convertSoundApi() {
     try {
-        await getModels();
-        await selectModel(model);
-        // await uploadSound();
+      await getModels();
+      // await uploadSound();
     } catch (error) {
       console.error("Error:", error);
     }
@@ -191,42 +167,16 @@ export default function ModelSelector() {
     return unsubscribe;
   }, [navigation]);
 
-  // changement du modèle sélectionné
-  useEffect(() => {
-    if (model) {
-      selectModel(model);
-    }
-  }, [model]);
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sélection du model</Text>
+      <Text style={styles.title}>Sélection du modèle</Text>
 
       {/* Liste des modèles */}
-      <Text>Modèles disponibles</Text>
       <FlatList
+        style={styles.modelsList}
         data={models}
         scrollEnabled={true}
-        renderItem={({ item }) => (
-          <View styles={styles.model}>
-            <Text>{item}</Text>
-            {model === item ? (
-              <CustomButton
-                style={styles.selectedButton}
-                titleStyle={styles.selectedButtonTitle}
-                title="Déselectionner"
-                event={() => setModel(null)}
-              />
-            ) : (
-              <CustomButton
-                style={styles.selectButton}
-                titleStyle={styles.selectButtonTitle}
-                title="Sélectionner"
-                event={() => setModel(item)}
-              />
-            )}
-          </View>
-        )}
+        renderItem={({ item }) => <ItemModel model={item} />}
         keyExtractor={(item) => item}
       />
 
@@ -259,10 +209,14 @@ const styles = {
     flex: 1,
     padding: 30,
   },
+  modelsList: {
+    marginBottom: 20,
+    marginTop: 20,
+  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 30,
+    marginBottom: 5,
   },
   titleSecond: {
     fontSize: 18,
@@ -276,25 +230,5 @@ const styles = {
     paddingHorizontal: 10,
     paddingVertical: 13,
     borderRadius: 10,
-  },
-  selectButton: {
-    backgroundColor: "transparent",
-    borderWidth: 2,
-    borderColor: "#6A5ACD",
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-  },
-  selectButtonTitle: {
-    color: "#6A5ACD",
-  },
-  selectedButton: {
-    backgroundColor: "#6A5ACD",
-    borderWidth: 2,
-    borderColor: "#6A5ACD",
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-  },
-  selectedButtonTitle: {
-    color: "white",
   },
 };
