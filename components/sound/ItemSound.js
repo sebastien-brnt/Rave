@@ -2,11 +2,11 @@ import { View, StyleSheet, Text } from "react-native";
 import CustomButton from "../common/CustomButton";
 import { useSelector, useDispatch } from "react-redux";
 import { selectSound, deselectSound, selectedSoundSelector } from "../slices/SoundSlice"; // Correction du nom de slice
-import * as FileSystem from "expo-file-system";
-import * as Audio from "expo-av"; // Ajout d'importation manquante
-import Icon from "react-native-vector-icons/Ionicons"; // Ajout d'importation manquante
+import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
+import Icon from "react-native-vector-icons/Ionicons";
 
-export default function ItemSound({ sound }) {
+export default function ItemSound({ sound, actions = true, last = false }) {
   const dispatch = useDispatch();
   const selectedSound = useSelector(selectedSoundSelector);
 
@@ -14,11 +14,13 @@ export default function ItemSound({ sound }) {
   async function playAudio(file) {
     const path = `${FileSystem.documentDirectory}recordings/${file}`;
 
-    await Audio.Audio.setAudioModeAsync({
-      playsInSilentModeIOS: true,
+    // Configuration de l'audio
+    await Audio.setAudioModeAsync({
+        playsInSilentModeIOS: true, // Jouer le son en mode silencieux sur iOS
     });
 
-    const { sound: playbackSound } = await Audio.Audio.Sound.createAsync({
+
+    const { sound: playbackSound } = await Audio.Sound.createAsync({
       uri: path,
     });
 
@@ -67,7 +69,7 @@ export default function ItemSound({ sound }) {
   }
 
   return (
-    <View style={styles.item}>
+    <View style={[styles.item, last === false ? styles.noLast : {} ]}>
       <Text style={styles.fileName} numberOfLines={1}>
         {sound}
       </Text>
@@ -78,26 +80,30 @@ export default function ItemSound({ sound }) {
           color={"#6A5ACD"}
           onPress={() => playAudio(sound)}
         />
-        <Icon
-          name="trash-outline"
-          size={25}
-          color={"red"}
-          onPress={() => deleteAudioFile(sound)}
-        />
-        {selectedSound === sound ? (
-          <CustomButton
-            style={styles.selectedButton}
-            titleStyle={styles.selectedButtonTitle}
-            title="Déselectionner"
-            event={() => handleSelectSound(null)}
-          />
-        ) : (
-          <CustomButton
-            style={styles.selectButton}
-            titleStyle={styles.selectButtonTitle}
-            title="Sélectionner"
-            event={() => handleSelectSound(sound)}
-          />
+        {actions == true && (
+          <>
+            <Icon
+              name="trash-outline"
+              size={25}
+              color={"red"}
+              onPress={() => deleteAudioFile(sound)}
+            />
+            {selectedSound === sound ? (
+              <CustomButton
+                style={styles.selectedButton}
+                titleStyle={styles.selectedButtonTitle}
+                title="Déselectionner"
+                event={() => handleSelectSound(null)}
+              />
+            ) : (
+              <CustomButton
+                style={styles.selectButton}
+                titleStyle={styles.selectButtonTitle}
+                title="Sélectionner"
+                event={() => handleSelectSound(sound)}
+              />
+            )}
+          </>
         )}
       </View>
     </View>
@@ -111,6 +117,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingBottom: 10,
+  },
+  noLast: {
     borderBottomWidth: 1,
     borderBottomColor: "lightgray",
   },

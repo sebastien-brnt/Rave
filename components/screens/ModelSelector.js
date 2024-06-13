@@ -7,21 +7,19 @@ import * as FileSystem from "expo-file-system";
 import { selectedSoundSelector } from "../slices/SoundSlice";
 import { useSelector } from "react-redux";
 import ItemModel from "../models/ItemModel";
+import ItemSound from "../sound/ItemSound";
 
 export default function ModelSelector() {
   const navigation = useNavigation();
+  const selectedSound = useSelector(selectedSoundSelector);
 
   // state pour stocker le modèle sélectionné
   const [fileName, setFileName] = useState("");
-  const [selectedSound, setSelectedSound] = useState(null);
   const [models, setModels] = useState([]);
 
   // Fonction de conversion de l'audio
   async function convertSound() {
     try {
-      // Conversion de l'audio
-      await convertSoundApi();
-
       // Affichage du message de succès
       Toast.show({
         type: "success",
@@ -38,14 +36,6 @@ export default function ModelSelector() {
     }
   }
 
-  // Fonction pour récupérer le fichier audio sélectionné dans le SoundSlice
-  async function getSelectedAudio() {
-    // Récupération du fichier audio sélectionné
-    const selectedAudio = useSelector(selectedSoundSelector);
-    console.log("Selected audio:", selectedAudio);
-    setSelectedSound(selectedAudio);
-  }
-
   const getModels = async () => {
     try {
       const response = await fetch("http://192.168.1.13:8000/getmodels", {
@@ -60,46 +50,6 @@ export default function ModelSelector() {
     }
   };
 
-  // Fonction pour envoyer l'audio à l'API
-  async function uploadSound() {
-    try {
-      // Path du fichier audio
-      const path = `${FileSystem.documentDirectory}recordings/${selectedSound}`;
-
-      const file = {
-        uri: path,
-        name: selectedSound,
-        type: "audio/m4a",
-      };
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch(`http://192.168.1.13:8000/upload`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.text();
-      console.log("Sound uploaded:", data, selectedSound);
-    } catch (error) {
-      console.error("Error uploading sound:", error);
-    }
-  }
-
-  // Fonction de conversion de l'audio via l'api
-  async function convertSoundApi() {
-    try {
-      await getModels();
-      // await uploadSound();
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
 
   // Fonction de sauvegarde de l'audio converti dans le téléphone
   async function saveConvertedSound() {
@@ -155,9 +105,7 @@ export default function ModelSelector() {
   // Chargement des fichiers audio et des modèles disponibles
   useEffect(() => {
     const focusListener = () => {
-      getSelectedAudio();
       getModels();
-      console.log("ModelSelector focused : ", selectedSound);
     };
 
     // Ajout d'un listener pour recharger les fichiers lorsque l'écran devient actif
@@ -185,7 +133,15 @@ export default function ModelSelector() {
 
       {/* Récapitulatif de l'audio d'origine et celui converti */}
       <Text style={styles.titleSecond}>Récapitulatif</Text>
-      <Text>Audio d'origine : </Text>
+      { selectedSound ?
+        <View style={styles.soundOrigin}>
+          <Text>Audio d'origine :</Text>
+          <ItemSound sound={selectedSound} actions={false} last={true}/>
+        </View>
+      : 
+        <Text>Aucun audio sélectionné</Text> 
+      }
+      
       <Text>Audio converti : </Text>
 
       {/* Enregistrement de l'audio converti */}
@@ -231,4 +187,7 @@ const styles = {
     paddingVertical: 13,
     borderRadius: 10,
   },
+  soundOrigin: {
+    marginBottom: 20,
+  }
 };
