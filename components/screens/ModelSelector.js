@@ -16,10 +16,91 @@ export default function ModelSelector() {
   // state pour stocker le modèle sélectionné
   const [fileName, setFileName] = useState("");
   const [models, setModels] = useState([]);
+  const [soundConverted, setSoundConverted] = useState(false);
+  
+  // Fonction pour récupérer le son converti sur le serveur
+  const downloadFile = async () => {
+    // create a directory in the app document directory
+    let directory = FileSystem.documentDirectory + "convertedSound/";
+
+    // Création du sous-dossier s'il n'existe pas
+    const dirInfo = await FileSystem.getInfoAsync(directory);
+    if (!dirInfo.exists) {
+      await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
+    }
+
+    // Download file
+    const { uri } = await FileSystem.downloadAsync(
+      "http://192.168.1.13:8000" + "/download",
+      directory + "sound.wav"
+    );
+  };
+
+  // Fonction pour envoyer un fichier audio au serveur
+  const sendFile = async (fileName) => {
+    const fileUri = `${FileSystem.documentDirectory}recordings/${fileName}`;
+
+    try {
+      // Vérifiez si le fichier existe avant de l'envoyer
+      const fileInfo = await FileSystem.getInfoAsync(fileUri);
+      if (!fileInfo.exists) {
+        throw new Error("Le fichier n'existe pas");
+      }
+
+      // Créer un objet FormData
+      const formData = new FormData();
+      formData.append("file", {
+        uri: fileUri,
+        name: fileName,
+        type: "audio/wav", // Vous pouvez ajuster ce type selon le type de fichier que vous envoyez
+      });
+
+      // Envoi de la requête pour uploader le fichier
+      const response = await fetch("http://192.168.1.13:8000/upload", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Filename: fileName,
+        },
+      });
+
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.text();
+
+      // Affichage du message de succès si le fichier a bien été uploadé
+      console.log("Response from server:", data);
+      Toast.show({
+        type: "success",
+        text1: "Fichier Uploadé",
+        text2: `Le fichier ${fileName} a été uploadé avec succès`,
+      });
+    } catch (error) {
+      // Affichage du message d'erreur si le fichier n'a pas pu être uploadé
+      console.error("Error uploading file:", error);
+      Toast.show({
+        type: "error",
+        text1: "Erreur",
+        text2: `Le fichier ${fileName} n'a pas pu être uploadé`,
+      });
+    }
+  };
 
   // Fonction de conversion de l'audio
   async function convertSound() {
+    // Mise à jour du state pour indiquer que l'audio n'est pas encore converti
+    setSoundConverted(false);
+
     try {
+      // Envoi du fichier audio au serveur
+      await sendFile(selectedSound);
+
+      // Téléchargement du fichier audio converti depuis le serveur
+      await downloadFile();
+
+      // Mise à jour du state pour indiquer que l'audio a été converti
+      setSoundConverted(true);
+
       // Affichage du message de succès
       Toast.show({
         type: "success",
@@ -43,13 +124,11 @@ export default function ModelSelector() {
       });
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
-      console.log(data.models);
       setModels(data.models);
     } catch (error) {
       console.error("Error fetching models:", error);
     }
   };
-
 
   // Fonction de sauvegarde de l'audio converti dans le téléphone
   async function saveConvertedSound() {
@@ -65,7 +144,7 @@ export default function ModelSelector() {
 
     try {
       // Path du dossier d'enregistrement des audios convertis
-      const directory = `${FileSystem.documentDirectory}convertedSound/`;
+      const directory = `${FileSystem.documentDirectory}savedConvertedSound/`;
 
       // Création du sous-dossier s'il n'existe pas
       const dirInfo = await FileSystem.getInfoAsync(directory);
@@ -133,16 +212,28 @@ export default function ModelSelector() {
 
       {/* Récapitulatif de l'audio d'origine et celui converti */}
       <Text style={styles.titleSecond}>Récapitulatif</Text>
-      { selectedSound ?
+      {selectedSound ? (
         <View style={styles.soundOrigin}>
           <Text>Audio d'origine :</Text>
-          <ItemSound sound={selectedSound} actions={false} last={true}/>
+          <ItemSound sound={selectedSound} actions={false} last={true} />
         </View>
-      : 
-        <Text>Aucun audio sélectionné</Text> 
-      }
-      
-      <Text>Audio converti : </Text>
+      ) : (
+        <Text>Aucun audio sélectionné</Text>
+      )}
+
+      {soundConverted ? (
+        <View>
+          <Text>Audio converti : </Text>
+          <ItemSound
+            sound={"sound.wav"}
+            actions={false}
+            last={true}
+            converted={true}
+          />
+        </View>
+      ) : (
+        <Text>L'audio n'est pas converti</Text>
+      )}
 
       {/* Enregistrement de l'audio converti */}
       <Text style={styles.titleSecond}>Enregistrer l'audio converti</Text>
@@ -189,5 +280,5 @@ const styles = {
   },
   soundOrigin: {
     marginBottom: 20,
-  }
+  },
 };
