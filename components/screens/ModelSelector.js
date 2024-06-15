@@ -1,4 +1,4 @@
-import { View, Text, TextInput, FlatList } from "react-native";
+import { View, Text, TextInput, FlatList, ScrollView } from "react-native";
 import { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import CustomButton from "../common/CustomButton";
@@ -195,6 +195,7 @@ export default function ModelSelector() {
   }, [navigation]);
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <Text style={styles.title}>Sélection du modèle</Text>
 
@@ -248,6 +249,7 @@ export default function ModelSelector() {
         event={() => saveConvertedSound()}
       />
     </View>
+    </ScrollView>
   );
 }
 

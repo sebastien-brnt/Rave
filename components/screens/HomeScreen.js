@@ -1,16 +1,16 @@
-import { View, Text, StyleSheet, TextInput, Button, Image } from 'react-native';
+import { View, StyleSheet, TextInput, Image } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
-import { addServer } from '../slices/ServerSlice';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import CustomButton from '../common/CustomButton';
-
+import { setServerInfo, setConnected, setDisconnected } from '../slices/ServerSlice';
 
 export default function HomeScreen() {
     const navigation = useNavigation();
     const [ip, setIp] = useState(''); // IP du serveur
     const [port, setPort] = useState(''); // Port du serveur
+    const dispatch = useDispatch();
 
     async function isAvailable() {
         try {
@@ -22,7 +22,6 @@ export default function HomeScreen() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // Lire le contenu brut de la réponse
             const textResponse = await response.text();
             if (textResponse.includes('Connexion sucess !')) {
                 return true;
@@ -31,13 +30,14 @@ export default function HomeScreen() {
             }
         } catch (error) {
             console.error('Error:', error);
+            return false;
         }
     }
-    
 
-    async function checkConnexion() {
+    async function checkConnexion() {        
         // Vérification de la connexion
         if (await isAvailable()) {
+            console.log('Server info:', { ip, port });
             // Affichage d'un toast de succès
             Toast.show({
                 type: 'success',
@@ -49,8 +49,8 @@ export default function HomeScreen() {
             navigation.navigate('Audio');
 
             // Ajout du serveur à la liste des serveurs
-            // const dispatch = useDispatch();
-            // dispatch (addServer({ip: ip, port: port}));
+            dispatch(setServerInfo({ ip, port }));
+            dispatch(setConnected());
         } else {
             // Affichage un toast d'erreur
             Toast.show({
@@ -58,6 +58,8 @@ export default function HomeScreen() {
               text1: 'Erreur lors de la connexion',
               text2: 'Veuillez vérifier les informations de connexion saisies.'
             });
+
+            dispatch(setDisconnected());
         }
     }
 
@@ -74,14 +76,14 @@ export default function HomeScreen() {
             {/* Champs de saisie pour l'IP */}
             <TextInput 
                 style={styles.input} 
-                placeholder="IP su serveur"
+                placeholder="IP du serveur"
                 onChangeText={setIp}
                 />
             
             {/* Champs de saisie du port */}
             <TextInput 
                 style={styles.input} 
-                placeholder="Port su serveur" 
+                placeholder="Port du serveur" 
                 onChangeText={setPort}
                 />
 
