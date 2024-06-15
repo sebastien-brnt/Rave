@@ -7,7 +7,7 @@ export default function ConvertedAudio() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title} >Audio convertis enregistrés</Text>
+            <Text style={styles.title} >Audios convertis enregistrés</Text>
         </View>
     );
 }

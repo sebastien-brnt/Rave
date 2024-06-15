@@ -1,4 +1,4 @@
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput, ScrollView } from "react-native";
 import { useState, useEffect } from "react";
 import * as FileSystem from "expo-file-system";
 import { useNavigation } from "@react-navigation/native";
@@ -34,11 +34,11 @@ export default function AudioSelector() {
     const files = await FileSystem.readDirectoryAsync(directory);
 
     // Clean de la recherche
-    const cleanSearch = search.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+    const cleanSearch = search.replace(/[^a-z0-9]/gi, "-").toLowerCase();
 
     const filteredFiles = files.filter((file) =>
       file
-        .replace(/[^a-z0-9]/gi, "_")
+        .replace(/[^a-z0-9]/gi, "-")
         .toLowerCase()
         .includes(cleanSearch)
     );
@@ -64,42 +64,44 @@ export default function AudioSelector() {
   }, [search]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sélection de l'audio</Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.title}>Sélection de l'audio</Text>
 
-      {/* Liste des fichiers audio */}
-      {audioFiles.map((file) => (
-        <ItemSound sound={file} />
-      ))}
+        {/* Liste des fichiers audio */}
+        {audioFiles.map((file) => (
+          <ItemSound sound={file} />
+        ))}
 
-      {/* Barre de recherche */}
-      <Text style={styles.titleSecond}>Rechercher un audio enregistré</Text>
+        {/* Barre de recherche */}
+        <Text style={styles.titleSecond}>Rechercher un audio enregistré</Text>
 
-      <View style={styles.searchBar}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Rechercher un fichier audio"
-          value={search}
-          onChangeText={setSearch}
-        />
-        <Icon name="search" size={25} color={"#6A5ACD"} />
-      </View>
-
-      {/* Résultat de la recherche */}
-      {search && searchResult ? (
-        <View>
-          <Text style={styles.resultTitle}>Meilleur résultat :</Text>
-
-          {/* Item du son résultat de la recherche */}
-          <ItemSound sound={searchResult} />
+        <View style={styles.searchBar}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Rechercher un fichier audio"
+            value={search}
+            onChangeText={setSearch}
+          />
+          <Icon name="search" size={25} color={"#6A5ACD"} />
         </View>
-      ) : (
-        search &&
-        !searchResult && (
-          <Text style={styles.noResult}>Aucun fichier audio trouvé</Text>
-        )
-      )}
-    </View>
+
+        {/* Résultat de la recherche */}
+        {search && searchResult ? (
+          <View>
+            <Text style={styles.resultTitle}>Meilleur résultat :</Text>
+
+            {/* Item du son résultat de la recherche */}
+            <ItemSound sound={searchResult} last={true} />
+          </View>
+        ) : (
+          search &&
+          !searchResult && (
+            <Text style={styles.noResult}>Aucun fichier audio trouvé</Text>
+          )
+        )}
+      </View>
+    </ScrollView>
   );
 }
 

@@ -17,7 +17,8 @@ export default function ModelSelector() {
   const [fileName, setFileName] = useState("");
   const [models, setModels] = useState([]);
   const [soundConverted, setSoundConverted] = useState(false);
-  
+  const isConnected = useSelector((state) => state.server.connected);
+
   // Fonction pour récupérer le son converti sur le serveur
   const downloadFile = async () => {
     // create a directory in the app document directory
@@ -184,7 +185,9 @@ export default function ModelSelector() {
   // Chargement des fichiers audio et des modèles disponibles
   useEffect(() => {
     const focusListener = () => {
-      getModels();
+      if (isConnected) {
+        getModels();
+      }
     };
 
     // Ajout d'un listener pour recharger les fichiers lorsque l'écran devient actif
@@ -196,59 +199,71 @@ export default function ModelSelector() {
 
   return (
     <ScrollView>
-    <View style={styles.container}>
-      <Text style={styles.title}>Sélection du modèle</Text>
+      <View style={styles.container}>
+        <Text style={styles.title}>Conversion de l'audio</Text>
 
-      {/* Liste des modèles */}
-      <FlatList
-        style={styles.modelsList}
-        data={models}
-        scrollEnabled={true}
-        renderItem={({ item }) => <ItemModel model={item} />}
-        keyExtractor={(item) => item}
-      />
+        {/* Récapitulatif de l'audio d'origine et celui converti */}
+        <Text style={styles.titleSecond}>Son sélectionné</Text>
+        {selectedSound ? (
+          <View style={styles.soundOrigin}>
+            <ItemSound sound={selectedSound} actions={false} last={true} />
+          </View>
+        ) : (
+          <Text>Aucun audio sélectionné</Text>
+        )}
 
-      {/* Bouton de conversion */}
-      <CustomButton title="Convertir l'audio" event={() => convertSound()} />
+        {/* Liste des modèles */}
+        <Text style={styles.titleSecond}>Choix du modèle</Text>
+        {models.length > 0 ? (
+          <View>
+            <FlatList
+              style={styles.modelsList}
+              data={models}
+              scrollEnabled={true}
+              renderItem={({ item }) => <ItemModel model={item} />}
+              keyExtractor={(item) => item}
+            />
 
-      {/* Récapitulatif de l'audio d'origine et celui converti */}
-      <Text style={styles.titleSecond}>Récapitulatif</Text>
-      {selectedSound ? (
-        <View style={styles.soundOrigin}>
-          <Text>Audio d'origine :</Text>
-          <ItemSound sound={selectedSound} actions={false} last={true} />
-        </View>
-      ) : (
-        <Text>Aucun audio sélectionné</Text>
-      )}
+            {/* Bouton de conversion */}
+            <CustomButton
+              title="Convertir l'audio"
+              event={() => convertSound()}
+            />
+          </View>
+        ) : (
+          <Text>Aucun modèle disponible</Text>
+        )}
 
-      {soundConverted ? (
-        <View>
-          <Text>Audio converti : </Text>
-          <ItemSound
-            sound={"sound.wav"}
-            actions={false}
-            last={true}
-            converted={true}
-          />
-        </View>
-      ) : (
-        <Text>L'audio n'est pas converti</Text>
-      )}
+        <Text style={styles.titleSecond}>Dernier audio converti</Text>
+        {/* Si il y a un audio converti */}
+        {soundConverted ? (
+          <View>
+            <Text>Audio converti : </Text>
+            <ItemSound
+              sound={"sound.wav"}
+              actions={false}
+              last={true}
+              converted={true}
+            />
 
-      {/* Enregistrement de l'audio converti */}
-      <Text style={styles.titleSecond}>Enregistrer l'audio converti</Text>
-      <TextInput
-        placeholder="Nom du fichier"
-        style={styles.fileName}
-        onChangeText={setFileName}
-        value={fileName}
-      />
-      <CustomButton
-        title="Enregistrer l'audio converti"
-        event={() => saveConvertedSound()}
-      />
-    </View>
+            {/* Enregistrement de l'audio converti */}
+            <Text style={styles.titleSecond}>Enregistrer l'audio converti</Text>
+            <TextInput
+              placeholder="Nom du fichier"
+              style={styles.fileName}
+              onChangeText={setFileName}
+              value={fileName}
+            />
+            <CustomButton
+              title="Enregistrer l'audio converti"
+              event={() => saveConvertedSound()}
+            />
+          </View>
+        ) : (
+          // Si il n'y a pas d'audio converti
+          <Text>Aucun audio disponible</Text>
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -281,6 +296,9 @@ const styles = {
     borderRadius: 10,
   },
   soundOrigin: {
-    marginBottom: 20,
+    backgroundColor: "#ddd",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
 };

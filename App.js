@@ -17,7 +17,7 @@ export default function App() {
   const Stack = createNativeStackNavigator(); // Permet de définir la pile de navigation
   const Tab = createBottomTabNavigator(); 
 
-  const [shouldShowTabs, setShouldShowTabs] = useState(false); 
+  const [shouldShowTabs, setShouldShowTabs] = useState(true); 
 
   return (
     // Logique de navigation de l'application :
