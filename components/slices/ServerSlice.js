@@ -10,17 +10,21 @@ const serverSlice = createSlice({
   name: "server",
   initialState,
   reducers: {
-    // Reducer pour définir l'IP et le port du serveur
-    setServerInfo: (state, action) => {
-      state.ip = action.payload.ip;
-      state.port = action.payload.port;
+    // Reducer pour définir le port du serveur
+    setServerPort: (state, action) => {
+      state.port = action.payload;
+    },
+
+    // Reducer pour définir l'IP du serveur
+    setServerIp: (state, action) => {
+        state.ip = action.payload;
     },
 
     // Reducer pour indiquer la connexion au serveur
     setConnected: (state) => {
       state.isConnected = true;
     },
-
+    
     // Reducer pour indiquer la déconnexion du serveur
     setDisconnected: (state) => {
       state.isConnected = false;
@@ -28,7 +32,7 @@ const serverSlice = createSlice({
   }
 });
 
-export const { setServerInfo, setConnected, setDisconnected } = serverSlice.actions;
+export const { setServerIp, setServerPort, setConnected, setDisconnected } = serverSlice.actions;
 
 // Sélecteur pour obtenir l'IP du serveur
 export const serverIpSelector = (state) => state.server.ip;

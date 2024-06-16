@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import CustomButton from '../common/CustomButton';
-import { setServerInfo, setConnected, setDisconnected } from '../slices/ServerSlice';
+import { setServerPort, setServerIp , setConnected, setDisconnected } from '../slices/ServerSlice';
 
 export default function HomeScreen() {
     const navigation = useNavigation();
@@ -37,7 +37,6 @@ export default function HomeScreen() {
     async function checkConnexion() {        
         // Vérification de la connexion
         if (await isAvailable()) {
-            console.log('Server info:', { ip, port });
             // Affichage d'un toast de succès
             Toast.show({
                 type: 'success',
@@ -45,12 +44,13 @@ export default function HomeScreen() {
                 text2: 'Nous avons réussi à nous connecter à serveur.'
             });
 
+            // Ajout du serveur à la liste des serveurs
+            await dispatch(setServerPort(port));
+            await dispatch(setServerIp(ip));
+            await dispatch(setConnected());
+
             // Redirection vers la page d'enregistrement des audios
             navigation.navigate('Audio');
-
-            // Ajout du serveur à la liste des serveurs
-            dispatch(setServerInfo({ ip, port }));
-            dispatch(setConnected());
         } else {
             // Affichage un toast d'erreur
             Toast.show({

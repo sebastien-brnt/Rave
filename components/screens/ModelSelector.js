@@ -5,6 +5,7 @@ import CustomButton from "../common/CustomButton";
 import Toast from "react-native-toast-message";
 import * as FileSystem from "expo-file-system";
 import { selectedSoundSelector } from "../slices/SoundSlice";
+import { isConnectedSelector, serverIpSelector, serverPortSelector } from "../slices/ServerSlice";
 import { useSelector } from "react-redux";
 import ItemModel from "../models/ItemModel";
 import ItemSound from "../sound/ItemSound";
@@ -17,7 +18,11 @@ export default function ModelSelector() {
   const [fileName, setFileName] = useState("");
   const [models, setModels] = useState([]);
   const [soundConverted, setSoundConverted] = useState(false);
-  const isConnected = useSelector((state) => state.server.connected);
+  
+  // Récupération des informations du serveur
+  const isConnected = useSelector(isConnectedSelector);
+  const serverIp = useSelector(serverIpSelector);
+  const serverPort = useSelector(serverPortSelector);
 
   // Fonction pour récupérer le son converti sur le serveur
   const downloadFile = async () => {
@@ -32,7 +37,7 @@ export default function ModelSelector() {
 
     // Download file
     const { uri } = await FileSystem.downloadAsync(
-      "http://192.168.1.13:8000" + "/download",
+      `http://${serverIp}:${serverPort}` + "/download",
       directory + "sound.wav"
     );
   };
@@ -57,7 +62,7 @@ export default function ModelSelector() {
       });
 
       // Envoi de la requête pour uploader le fichier
-      const response = await fetch("http://192.168.1.13:8000/upload", {
+      const response = await fetch( `http://${serverIp}:${serverPort}/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -120,7 +125,7 @@ export default function ModelSelector() {
 
   const getModels = async () => {
     try {
-      const response = await fetch("http://192.168.1.13:8000/getmodels", {
+      const response = await fetch(`http://${serverIp}:${serverPort}/getmodels`, {
         method: "GET",
       });
       if (!response.ok) throw new Error("Network response was not ok");
@@ -238,13 +243,14 @@ export default function ModelSelector() {
         {/* Si il y a un audio converti */}
         {soundConverted ? (
           <View>
-            <Text>Audio converti : </Text>
-            <ItemSound
-              sound={"sound.wav"}
-              actions={false}
-              last={true}
-              converted={true}
-            />
+            <View style={styles.soundOrigin}>
+              <ItemSound
+                sound={"sound.wav"}
+                actions={false}
+                last={true}
+                converted={true}
+              />
+            </View>
 
             {/* Enregistrement de l'audio converti */}
             <Text style={styles.titleSecond}>Enregistrer l'audio converti</Text>

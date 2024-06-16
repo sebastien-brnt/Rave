@@ -3,11 +3,16 @@ import CustomButton from "../common/CustomButton";
 import Toast from "react-native-toast-message";
 import { useSelector, useDispatch } from "react-redux";
 import { selectModel, deselectModel, selectedModelSelector } from "../slices/ModelSlice";
+import { serverIpSelector, serverPortSelector } from "../slices/ServerSlice";
 
 export default function ItemModel({ model }) {
   const dispatch = useDispatch();
   // Récupération du modèle sélectionné dans le store
   const selectedModel = useSelector(selectedModelSelector);
+
+  // Récupération des informations du serveur
+  const serverIp = useSelector(serverIpSelector);
+  const serverPort = useSelector(serverPortSelector);
 
   async function selectModelInServer(modelName) {
     // Enregistrement du modèle sélectionné dans le store
@@ -15,8 +20,7 @@ export default function ItemModel({ model }) {
 
     try {
       // Envoi de la requête pour sélectionner le modèle
-      const response = await fetch(
-        `http://192.168.1.13:8000/selectModel/${modelName}`,
+      const response = await fetch( `http://${serverIp}:${serverPort}/selectModel/${modelName}`,
         {
           method: "POST",
         }

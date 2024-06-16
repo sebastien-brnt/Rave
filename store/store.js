@@ -10,6 +10,7 @@ import modelsReducer from '../components/slices/ModelSlice';
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist: ['server'] // Exclusion de la sauvegarde du slice server
 };
 
 // Création des reducers
