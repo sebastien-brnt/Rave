@@ -66,7 +66,8 @@ export default function ConnexionScreen() {
     useEffect(() => {
         // Vérification de la connexion au serveur et redirection de l'utilisateur
         if (isConnected) {
-            navigation.navigate('Audio');
+            console.log('Connexion réussie !');
+            navigation.navigate("Audio")
         }
     });
 

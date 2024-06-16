@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import ItemSound from "../sound/ItemSound";
 
-export default function AudioSelector() {
+export default function AudioSelectorScreen() {
   const navigation = useNavigation();
 
   // State pour la recherche

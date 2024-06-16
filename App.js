@@ -63,10 +63,8 @@ function AppNavigator() {
           />
         </Tab.Navigator>
       ) : (
-        // Afficher un autre composant ou écran si shouldShowTabs est false
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name="Home" component={ConnexionScreen} />
-          {/* Ajoutez d'autres écrans si nécessaire */}
         </Stack.Navigator>
       )}
     </NavigationContainer>

@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import ItemModel from "../models/ItemModel";
 import ItemSound from "../sound/ItemSound";
 
-export default function ModelSelector() {
+export default function ConversionScreen() {
   const navigation = useNavigation();
   const selectedSound = useSelector(selectedSoundSelector);
 
