@@ -5,11 +5,13 @@ import { selectSound, deselectSound, selectedSoundSelector, removeSound } from "
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import Icon from "react-native-vector-icons/Ionicons";
+import { removeConvertedSound } from "../slices/ConvertedSlice";
 
 export default function ItemSound({
   sound,
   actions = true,
   play = true,
+  slice = "SoundSlice",
   deleting = true,
   select = true,
   last = false,
@@ -52,8 +54,13 @@ export default function ItemSound({
       const path = `${FileSystem.documentDirectory}${directory}/${file.fileName}`;
       await FileSystem.deleteAsync(path);
 
-      // Suppression du son du store
-      dispatch(removeSound(file));
+      if (slice === "SoundSlice") {
+        // Suppression du son du store
+        dispatch(removeSound(file));
+      } else if (slice === "ConvertedSlice") {
+        // Suppression du son du store
+        dispatch(removeConvertedSound(file));
+      }
     } catch (error) {
       console.error("Error deleting audio file:", error);
     }

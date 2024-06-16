@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 // Création du slice pour les sons convertis
-const convertedSoundSlice = createSlice({
-  name: "convertedSounds",
+const convertedSlice = createSlice({
+  name: "converted",
   initialState: {
     convertedSounds: [], // Liste des fichiers audio
   },
@@ -14,7 +14,8 @@ const convertedSoundSlice = createSlice({
 
     // Réducteur pour ajouter un son converti à la liste
     addConvertedSound: (state, action) => {
-      state.convertedSounds.push(action.payload);
+        state.convertedSounds.push(action.payload);
+        console.log(state.convertedSounds);
     },
 
     // Réducteur pour supprimer un son converti de la liste
@@ -27,10 +28,10 @@ const convertedSoundSlice = createSlice({
 });
 
 // Exportation des actions générées par le slice
-export const { setConvertedSounds, addConvertedSound, removeConvertedSound } = convertedSoundSlice.actions;
+export const { setConvertedSounds, addConvertedSound, removeConvertedSound } = convertedSlice.actions;
 
 // Sélecteur pour obtenir tous les sons convertis
-export const convertedSoundsSelector = (state) => state.convertedSounds.convertedSounds;
+export const convertedSoundsSelector = (state) => state.converted.convertedSounds;
 
 // Exportation du réducteur pour l'intégration dans le store
-export default convertedSoundSlice.reducer;
+export default convertedSlice.reducer;

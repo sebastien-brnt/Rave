@@ -1,7 +1,7 @@
 import { View, Text, FlatList } from "react-native";
 import ItemSound from "../sound/ItemSound";
 import { useSelector } from "react-redux";
-import { convertedSoundsSelector } from "../slices/ConvertedSoundSlice";
+import { convertedSoundsSelector } from "../slices/ConvertedSlice";
 
 export default function ConvertedAudioListScreen() {
   const audioFiles = useSelector(convertedSoundsSelector);
@@ -19,6 +19,7 @@ export default function ConvertedAudioListScreen() {
             sound={item}
             select={false}
             directory="savedConvertedSound"
+            slice="ConvertedSlice"
             last={index === audioFiles.length - 1}
           />
         )}

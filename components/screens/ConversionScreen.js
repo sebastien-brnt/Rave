@@ -9,7 +9,7 @@ import { isConnectedSelector, serverIpSelector, serverPortSelector } from "../sl
 import { useDispatch, useSelector } from "react-redux";
 import ItemModel from "../models/ItemModel";
 import ItemSound from "../sound/ItemSound";
-import { addConvertedSound } from "../slices/ConvertedSoundSlice";
+import { addConvertedSound } from "../slices/ConvertedSlice";
 
 export default function ConversionScreen() {
   const navigation = useNavigation();
