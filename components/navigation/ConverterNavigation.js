@@ -13,7 +13,7 @@ export default function ConverterNavigation() {
         },
         {
             component: () => <ConversionScreen />,
-            tabLabel: "Sélection Modèle",
+            tabLabel: "Conversion Audio",
         },
         {
             component: () => <ConvertedAudioListScreen />,
@@ -36,9 +36,13 @@ const styles = {
         borderColor: '#6A5ACD',
     },
     pillLabel: {
-        color: 'gray',
+        color: "#6A5ACD", 
+        height: 20
     },
     activeLabel: {
         color: '#6A5ACD',
     },
+    staticPillsContainer: {
+        height: 35,
+    }
 };
