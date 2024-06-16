@@ -1,16 +1,19 @@
 import { View, StyleSheet, TextInput, Image } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { useDispatch } from 'react-redux';
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import CustomButton from '../common/CustomButton';
-import { setServerPort, setServerIp , setConnected, setDisconnected } from '../slices/ServerSlice';
+import { setServerPort, setServerIp , setConnected, setDisconnected, isConnectedSelector } from '../slices/ServerSlice';
 
-export default function HomeScreen() {
+export default function ConnexionScreen() {
     const navigation = useNavigation();
     const [ip, setIp] = useState(''); // IP du serveur
     const [port, setPort] = useState(''); // Port du serveur
     const dispatch = useDispatch();
+
+    // Récupération de l'état de la connexion
+    const isConnected = useSelector(isConnectedSelector);
 
     async function isAvailable() {
         try {
@@ -48,9 +51,6 @@ export default function HomeScreen() {
             await dispatch(setServerPort(port));
             await dispatch(setServerIp(ip));
             await dispatch(setConnected());
-
-            // Redirection vers la page d'enregistrement des audios
-            navigation.navigate('Audio');
         } else {
             // Affichage un toast d'erreur
             Toast.show({
@@ -62,6 +62,13 @@ export default function HomeScreen() {
             dispatch(setDisconnected());
         }
     }
+
+    useEffect(() => {
+        // Vérification de la connexion au serveur et redirection de l'utilisateur
+        if (isConnected) {
+            navigation.navigate('Audio');
+        }
+    });
 
     return (
         <View style={styles.container}>
@@ -99,6 +106,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        transform: [{ translateY: -50 }],
     },
     title: {
         fontSize: 20,

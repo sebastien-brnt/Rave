@@ -9,7 +9,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/AntDesign";
 
 // Import des pages
-import HomeScreen from "./components/screens/HomeScreen";
+import ConnexionScreen from "./components/screens/ConnexionScreen";
 import AudioScreen from "./components/screens/AudioScreen";
 import ConverterNavigation from "./components/navigation/ConverterNavigation";
 
@@ -21,8 +21,8 @@ const Tab = createBottomTabNavigator();
 
 function AppNavigator() {
   // Logique de navigation de l'application :
-  //    - 3 écrans : HomeScreen, AudioScreen, ConverterScreen
-  //    - Ecran de démarrage : HomeScreen
+  //    - 3 écrans : ConnexionScreen, AudioScreen, ConverterNavigation
+  //    - Ecran de démarrage : ConnexionScreen
 
   // Récupération de l'état de connexion au serveur
   const isConnected = useSelector(isConnectedSelector);
@@ -41,16 +41,6 @@ function AppNavigator() {
     <NavigationContainer>
       {shouldShowTabs ? (
         <Tab.Navigator tabBar={(props) => <ColorfulTabBar {...props} />}>
-          <Tab.Screen
-            name="Accueil"
-            component={HomeScreen}
-            options={{
-              headerTitle: "Accueil",
-              tabBarIcon: ({ color, size }) => (
-                <Icon name="home" size={size} color={color} />
-              ),
-            }}
-          />
           <Tab.Screen
             name="Audio"
             component={AudioScreen}
@@ -75,7 +65,7 @@ function AppNavigator() {
       ) : (
         // Afficher un autre composant ou écran si shouldShowTabs est false
         <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Home" component={ConnexionScreen} />
           {/* Ajoutez d'autres écrans si nécessaire */}
         </Stack.Navigator>
       )}
