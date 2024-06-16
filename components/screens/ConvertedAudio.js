@@ -1,25 +1,57 @@
-import { View, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-
+import * as FileSystem from "expo-file-system";
+import { View, Text } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useState, useEffect } from "react";
+import ItemSound from "../sound/ItemSound";
 
 export default function ConvertedAudio() {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
+  const [audioFiles, setAudioFiles] = useState([]);
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title} >Audios convertis enregistrés</Text>
-        </View>
-    );
+  // Fonction pour récupérer la liste des fichiers audio
+  async function loadAudioFiles() {
+    try {
+      // Path du dossier d'enregistrement
+      const directory = `${FileSystem.documentDirectory}savedConvertedSound/`;
+      const files = await FileSystem.readDirectoryAsync(directory);
+      setAudioFiles(files);
+    } catch (error) {
+      console.error("Error loading audio files:", error);
+    }
+  }
+
+  // Chargement des fichiers audio
+  useEffect(() => {
+    const focusListener = () => {
+      loadAudioFiles();
+    };
+
+    // Ajout d'un listener pour recharger les fichiers lorsque l'écran devient actif
+    const unsubscribe = navigation.addListener("focus", focusListener);
+
+    // Nettoyage du listener lors du démontage du composant
+    return unsubscribe;
+  }, [navigation]);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Audios convertis enregistrés</Text>
+      {/* Liste des fichiers audio */}
+      {audioFiles.map((file) => (
+          <ItemSound sound={file} select={false} directory="savedConvertedSound" />
+        ))}
+    </View>
+  );
 }
 
 const styles = {
-    container: {
-        flex: 1,
-        padding: 30
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 30
-    },
+  container: {
+    flex: 1,
+    padding: 30,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 30,
+  },
 };

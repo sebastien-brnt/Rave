@@ -9,13 +9,16 @@ import {
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import Icon from "react-native-vector-icons/Ionicons";
-import Toast from "react-native-toast-message";
 
 export default function ItemSound({
   sound,
   actions = true,
+  play = true,
+  deleting = true,
+  select = true,
   last = false,
   converted = false,
+  directory = "recordings",
 }) {
   const dispatch = useDispatch();
   const selectedSound = useSelector(selectedSoundSelector);
@@ -49,7 +52,7 @@ export default function ItemSound({
   // Fonction pour supprimer un fichier audio
   async function deleteAudioFile(file) {
     try {
-      const path = `${FileSystem.documentDirectory}recordings/${file}`;
+      const path = `${FileSystem.documentDirectory}${directory}/${file}`;
       await FileSystem.deleteAsync(path);
       console.log("File deleted:", file);
     } catch (error) {
@@ -71,26 +74,34 @@ export default function ItemSound({
         />
         {actions == true && (
           <>
-            <Icon
-              name="trash-outline"
-              size={25}
-              color={"red"}
-              onPress={() => deleteAudioFile(sound)}
-            />
-            {selectedSound === sound ? (
-              <CustomButton
-                style={styles.selectedButton}
-                titleStyle={styles.selectedButtonTitle}
-                title="Déselectionner"
-                event={() => handleSelectSound(null)}
-              />
-            ) : (
-              <CustomButton
-                style={styles.selectButton}
-                titleStyle={styles.selectButtonTitle}
-                title="Sélectionner"
-                event={() => handleSelectSound(sound)}
-              />
+            {deleting == true && (
+              <>
+                <Icon
+                  name="trash-outline"
+                  size={25}
+                  color={"red"}
+                  onPress={() => deleteAudioFile(sound)}
+                />
+              </>
+            )}
+            {select == true && (
+              <>
+                {selectedSound === sound ? (
+                  <CustomButton
+                    style={styles.selectedButton}
+                    titleStyle={styles.selectedButtonTitle}
+                    title="Déselectionner"
+                    event={() => handleSelectSound(null)}
+                  />
+                ) : (
+                  <CustomButton
+                    style={styles.selectButton}
+                    titleStyle={styles.selectButtonTitle}
+                    title="Sélectionner"
+                    event={() => handleSelectSound(sound)}
+                  />
+                )}
+              </>
             )}
           </>
         )}

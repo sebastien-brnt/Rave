@@ -5,7 +5,11 @@ import CustomButton from "../common/CustomButton";
 import Toast from "react-native-toast-message";
 import * as FileSystem from "expo-file-system";
 import { selectedSoundSelector } from "../slices/SoundSlice";
-import { isConnectedSelector, serverIpSelector, serverPortSelector } from "../slices/ServerSlice";
+import {
+  isConnectedSelector,
+  serverIpSelector,
+  serverPortSelector,
+} from "../slices/ServerSlice";
 import { useSelector } from "react-redux";
 import ItemModel from "../models/ItemModel";
 import ItemSound from "../sound/ItemSound";
@@ -18,7 +22,7 @@ export default function ModelSelector() {
   const [fileName, setFileName] = useState("");
   const [models, setModels] = useState([]);
   const [soundConverted, setSoundConverted] = useState(false);
-  
+
   // Récupération des informations du serveur
   const isConnected = useSelector(isConnectedSelector);
   const serverIp = useSelector(serverIpSelector);
@@ -62,7 +66,7 @@ export default function ModelSelector() {
       });
 
       // Envoi de la requête pour uploader le fichier
-      const response = await fetch( `http://${serverIp}:${serverPort}/upload`, {
+      const response = await fetch(`http://${serverIp}:${serverPort}/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -125,9 +129,12 @@ export default function ModelSelector() {
 
   const getModels = async () => {
     try {
-      const response = await fetch(`http://${serverIp}:${serverPort}/getmodels`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `http://${serverIp}:${serverPort}/getmodels`,
+        {
+          method: "GET",
+        }
+      );
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
       setModels(data.models);
@@ -149,6 +156,20 @@ export default function ModelSelector() {
     }
 
     try {
+      // Récupération de l'uri du fichier audio converti
+      const convertedFileUri = `${FileSystem.documentDirectory}convertedSound/sound.wav`;
+
+      // Vérification de l'existence du fichier
+      const convertedFileInfo = await FileSystem.getInfoAsync(convertedFileUri);
+      if (!convertedFileInfo.exists) {
+        Toast.show({
+          type: "error",
+          text1: "Erreur d'enregistrement",
+          text2: "Aucun audio converti",
+        });
+        return;
+      }
+
       // Path du dossier d'enregistrement des audios convertis
       const directory = `${FileSystem.documentDirectory}savedConvertedSound/`;
 
@@ -162,7 +183,7 @@ export default function ModelSelector() {
       const cleanFileName = fileName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
 
       // URI
-      const fileUri = `${directory}${cleanFileName}.m4a`;
+      const fileUri = `${directory}${cleanFileName}.wav`;
 
       // Vérification de l'existence du fichier
       const fileInfo = await FileSystem.getInfoAsync(fileUri);
@@ -177,6 +198,7 @@ export default function ModelSelector() {
 
       // Enregistrement
       await FileSystem.moveAsync({
+        from: convertedFileUri,
         to: fileUri,
       });
 
