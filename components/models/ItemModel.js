@@ -14,6 +14,7 @@ export default function ItemModel({ model }) {
   const serverIp = useSelector(serverIpSelector);
   const serverPort = useSelector(serverPortSelector);
 
+  // Fonction pour sélectionner un modèle sur le serveur
   async function selectModelInServer(modelName) {
     // Enregistrement du modèle sélectionné dans le store
     dispatch(modelName ? selectModel(modelName) : deselectModel());
@@ -26,6 +27,7 @@ export default function ItemModel({ model }) {
         }
       );
 
+      // Vérification de la réponse du serveur
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.text();
 
@@ -66,6 +68,7 @@ export default function ItemModel({ model }) {
   );
 }
 
+// Styles utilisés pour les composants
 const styles = StyleSheet.create({
   model: {
     flex: 1,

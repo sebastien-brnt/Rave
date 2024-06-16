@@ -1,20 +1,21 @@
 import { View, StyleSheet, TextInput, Image } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import CustomButton from '../common/CustomButton';
-import { setServerPort, setServerIp , setConnected, setDisconnected, isConnectedSelector } from '../slices/ServerSlice';
+import { setServerPort, setServerIp , setConnected, setDisconnected } from '../slices/ServerSlice';
 
+// Composant principal exporté par défaut
 export default function ConnexionScreen() {
     const navigation = useNavigation();
-    const [ip, setIp] = useState(''); // IP du serveur
-    const [port, setPort] = useState(''); // Port du serveur
     const dispatch = useDispatch();
 
-    // Récupération de l'état de la connexion
-    const isConnected = useSelector(isConnectedSelector);
+    // Informations du serveur
+    const [ip, setIp] = useState(''); 
+    const [port, setPort] = useState('');
 
+    // Fonction pour vérifier si le serveur est disponible
     async function isAvailable() {
         try {
             const response = await fetch(`http://${ip}:${port}`, {
@@ -37,6 +38,7 @@ export default function ConnexionScreen() {
         }
     }
 
+    // Fonction pour vérifier la connexion au serveur
     async function checkConnexion() {        
         // Vérification de la connexion
         if (await isAvailable()) {
@@ -52,7 +54,7 @@ export default function ConnexionScreen() {
             await dispatch(setServerIp(ip));
             await dispatch(setConnected());
         } else {
-            // Affichage un toast d'erreur
+            // Affichage d'un toast d'erreur
             Toast.show({
               type: 'error',
               text1: 'Erreur lors de la connexion',
@@ -62,14 +64,6 @@ export default function ConnexionScreen() {
             dispatch(setDisconnected());
         }
     }
-
-    useEffect(() => {
-        // Vérification de la connexion au serveur et redirection de l'utilisateur
-        if (isConnected) {
-            console.log('Connexion réussie !');
-            navigation.navigate("Audio")
-        }
-    });
 
     return (
         <View style={styles.container}>
@@ -102,6 +96,7 @@ export default function ConnexionScreen() {
     );
 }
 
+// Styles utilisés pour les composants
 const styles = StyleSheet.create({
     container: {
         flex: 1,
