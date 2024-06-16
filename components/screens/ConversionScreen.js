@@ -5,17 +5,15 @@ import CustomButton from "../common/CustomButton";
 import Toast from "react-native-toast-message";
 import * as FileSystem from "expo-file-system";
 import { selectedSoundSelector } from "../slices/SoundSlice";
-import {
-  isConnectedSelector,
-  serverIpSelector,
-  serverPortSelector,
-} from "../slices/ServerSlice";
-import { useSelector } from "react-redux";
+import { isConnectedSelector, serverIpSelector, serverPortSelector } from "../slices/ServerSlice";
+import { useDispatch, useSelector } from "react-redux";
 import ItemModel from "../models/ItemModel";
 import ItemSound from "../sound/ItemSound";
+import { addConvertedSound } from "../slices/ConvertedSoundSlice";
 
 export default function ConversionScreen() {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const selectedSound = useSelector(selectedSoundSelector);
 
   // state pour stocker le modèle sélectionné
@@ -103,7 +101,7 @@ export default function ConversionScreen() {
 
     try {
       // Envoi du fichier audio au serveur
-      await sendFile(selectedSound);
+      await sendFile(selectedSound.fileName);
 
       // Téléchargement du fichier audio converti depuis le serveur
       await downloadFile();
@@ -202,8 +200,11 @@ export default function ConversionScreen() {
         to: fileUri,
       });
 
-      console.log("Recording saved to:", fileUri);
-      setFileName(""); // Réinitialise le nom du fichier après la sauvegarde
+      // Ajout du son dans le store
+      dispatch(addConvertedSound({ name: fileName, fileName: cleanFileName + ".wav", uri: fileUri }));
+
+      // Réinitialisation du nom du fichier après la sauvegarde
+      setFileName(""); 
     } catch (error) {
       console.error("Error saving recording:", error);
     }

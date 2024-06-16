@@ -12,9 +12,14 @@ const soundSlice = createSlice({
       state.sounds = action.payload;
     },
 
+    // Reducer pour ajouter un audio
+    addSound: (state, action) => {
+      state.sounds.push(action.payload);
+    },
+
     // Reducer pour supprimer un audio
     removeSound: (state, action) => {
-      state.sounds = state.sounds.filter((sound) => sound !== action.payload);
+      state.sounds = state.sounds.filter((sound) => sound.fileName !== action.payload.fileName);
     },
 
     // Reducer pour sélectionner un audio
@@ -29,7 +34,7 @@ const soundSlice = createSlice({
   },
 });
 
-export const { setSounds, removeSound, selectSound, deselectSound } =
+export const { setSounds, addSound, removeSound, selectSound, deselectSound } =
   soundSlice.actions;
 
 // Sélecteur pour obtenir tous les audios

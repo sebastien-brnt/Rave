@@ -1,11 +1,7 @@
 import { View, StyleSheet, Text } from "react-native";
 import CustomButton from "../common/CustomButton";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  selectSound,
-  deselectSound,
-  selectedSoundSelector,
-} from "../slices/SoundSlice"; // Correction du nom de slice
+import { selectSound, deselectSound, selectedSoundSelector, removeSound } from "../slices/SoundSlice"; // Correction du nom de slice
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -29,7 +25,7 @@ export default function ItemSound({
     if (converted === true) {
       path = `${FileSystem.documentDirectory}convertedSound/${file}`;
     } else {
-      path = `${FileSystem.documentDirectory}recordings/${file}`;
+      path = `${FileSystem.documentDirectory}${directory}/${file.fileName}`;
     }
 
     // Configuration de l'audio
@@ -45,16 +41,19 @@ export default function ItemSound({
   }
 
   // Fonction pour sélectionner ou désélectionner un son
-  async function handleSelectSound(soundName) {
-    dispatch(soundName ? selectSound(soundName) : deselectSound());
+  async function handleSelectSound(sound) {
+    dispatch(sound ? selectSound(sound) : deselectSound());
   }
 
   // Fonction pour supprimer un fichier audio
   async function deleteAudioFile(file) {
     try {
-      const path = `${FileSystem.documentDirectory}${directory}/${file}`;
+      // Suppression du fichier audio dans le téléphone
+      const path = `${FileSystem.documentDirectory}${directory}/${file.fileName}`;
       await FileSystem.deleteAsync(path);
-      console.log("File deleted:", file);
+
+      // Suppression du son du store
+      dispatch(removeSound(file));
     } catch (error) {
       console.error("Error deleting audio file:", error);
     }
@@ -62,9 +61,15 @@ export default function ItemSound({
 
   return (
     <View style={[styles.item, last === false ? styles.noLast : {}]}>
+      { converted ? 
       <Text style={styles.fileName} numberOfLines={1}>
-        {sound}
+        sound.wav
       </Text>
+      :
+      <Text style={styles.fileName} numberOfLines={1}>
+        {sound.name}
+      </Text>
+      }
       <View style={styles.actions}>
         <Icon
           name="play-circle-outline"
@@ -86,7 +91,7 @@ export default function ItemSound({
             )}
             {select == true && (
               <>
-                {selectedSound === sound ? (
+                {selectedSound && selectedSound.fileName === sound.fileName ? (
                   <CustomButton
                     style={styles.selectedButton}
                     titleStyle={styles.selectedButtonTitle}

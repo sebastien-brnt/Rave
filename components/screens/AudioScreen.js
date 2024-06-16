@@ -4,8 +4,11 @@ import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import Toast from "react-native-toast-message";
 import CustomButton from "../common/CustomButton";
+import { addSound } from "../slices/SoundSlice";
+import { useDispatch } from "react-redux";
 
 export default function AudioScreen() {
+  const dispatch = useDispatch();
   const [sound, setSound] = useState(null); // Etat pour le son
   const [recording, setRecording] = useState(null); // Etat pour l'enregistrement
   const [recordingUri, setRecordingUri] = useState(null); // Etat pour l'URI de l'enregistrement
@@ -142,7 +145,9 @@ export default function AudioScreen() {
         to: fileUri,
       });
 
-      console.log("Recording saved to:", fileUri);
+      // AJout du son dans le store
+      dispatch(addSound({ name: fileName, fileName: cleanFileName + ".m4a", uri: fileUri }));
+
       setRecordingUri(null); // Réinitialise l'URI de l'enregistrement après la sauvegarde
       setFileName(""); // Réinitialise le nom du fichier après la sauvegarde
     } catch (error) {

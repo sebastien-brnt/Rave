@@ -5,6 +5,7 @@ import storage from '@react-native-async-storage/async-storage';
 import serverReducer from '../components/slices/ServerSlice';
 import soundsReducer from '../components/slices/SoundSlice';
 import modelsReducer from '../components/slices/ModelSlice';
+import convertedSoundsReducer from '../components/slices/ConvertedSoundSlice';
 
 // Configuration de la persistance
 const persistConfig = {
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
     server: serverReducer,
     sounds: soundsReducer,
     models: modelsReducer,
+    convertedSounds: convertedSoundsReducer,
 });
 
 // Création du reducer persistant
