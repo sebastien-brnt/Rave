@@ -303,7 +303,6 @@ const styles = {
   },
   modelsList: {
     marginBottom: 20,
-    marginTop: 20,
   },
   title: {
     fontSize: 20,

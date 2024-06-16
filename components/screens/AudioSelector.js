@@ -68,11 +68,6 @@ export default function AudioSelector() {
       <View style={styles.container}>
         <Text style={styles.title}>Sélection de l'audio</Text>
 
-        {/* Liste des fichiers audio */}
-        {audioFiles.map((file) => (
-          <ItemSound sound={file} />
-        ))}
-
         {/* Barre de recherche */}
         <Text style={styles.titleSecond}>Rechercher un audio enregistré</Text>
 
@@ -88,9 +83,7 @@ export default function AudioSelector() {
 
         {/* Résultat de la recherche */}
         {search && searchResult ? (
-          <View>
-            <Text style={styles.resultTitle}>Meilleur résultat :</Text>
-
+          <View style={styles.bestResult}>
             {/* Item du son résultat de la recherche */}
             <ItemSound sound={searchResult} last={true} />
           </View>
@@ -100,6 +93,12 @@ export default function AudioSelector() {
             <Text style={styles.noResult}>Aucun fichier audio trouvé</Text>
           )
         )}
+
+        {/* Liste des fichiers audio */}
+        <Text style={styles.titleList}>Liste des audios enregistrés</Text>
+        {audioFiles.map((file) => (
+          <ItemSound sound={file} />
+        ))}
       </View>
     </ScrollView>
   );
@@ -113,12 +112,18 @@ const styles = {
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 30,
   },
   titleSecond: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    marginTop: 40,
+    marginTop: 30,
+    marginBottom: 20,
+  },
+  titleList: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 60,
+    marginBottom: 20,
   },
   searchBar: {
     flexDirection: "row",
@@ -128,7 +133,6 @@ const styles = {
     borderColor: "lightgrey",
     borderRadius: 10,
     padding: 10,
-    marginTop: 20,
   },
   searchInput: {
     flex: 1,
@@ -140,5 +144,12 @@ const styles = {
   resultTitle: {
     fontWeight: "bold",
     marginTop: 20,
+  },
+  bestResult: {
+    marginTop: 10,
+    backgroundColor: "#ddd",
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
 };

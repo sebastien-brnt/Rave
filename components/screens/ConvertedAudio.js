@@ -13,6 +13,13 @@ export default function ConvertedAudio() {
     try {
       // Path du dossier d'enregistrement
       const directory = `${FileSystem.documentDirectory}savedConvertedSound/`;
+
+      // Création du sous-dossier s'il n'existe pas
+      const dirInfo = await FileSystem.getInfoAsync(directory);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
+      }
+
       const files = await FileSystem.readDirectoryAsync(directory);
       setAudioFiles(files);
     } catch (error) {
@@ -37,6 +44,7 @@ export default function ConvertedAudio() {
     <View style={styles.container}>
       <Text style={styles.title}>Audios convertis enregistrés</Text>
       {/* Liste des fichiers audio */}
+      { audioFiles.length === 0 && <Text>Aucun fichier audio enregistré</Text>}
       {audioFiles.map((file) => (
           <ItemSound sound={file} select={false} directory="savedConvertedSound" />
         ))}
