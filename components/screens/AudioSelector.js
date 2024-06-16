@@ -1,4 +1,4 @@
-import { View, Text, TextInput, ScrollView } from "react-native";
+import { View, Text, TextInput, ScrollView, FlatList } from "react-native";
 import { useState, useEffect } from "react";
 import * as FileSystem from "expo-file-system";
 import { useNavigation } from "@react-navigation/native";
@@ -96,9 +96,13 @@ export default function AudioSelector() {
 
         {/* Liste des fichiers audio */}
         <Text style={styles.titleList}>Liste des audios enregistrés</Text>
-        {audioFiles.map((file) => (
-          <ItemSound sound={file} />
-        ))}
+        <FlatList
+          data={audioFiles}
+          keyExtractor={(item) => item}
+          renderItem={({ item, index }) => (
+            <ItemSound sound={item} last={index === audioFiles.length - 1} />
+          )}
+        />
       </View>
     </ScrollView>
   );

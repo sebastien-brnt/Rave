@@ -1,5 +1,5 @@
 import * as FileSystem from "expo-file-system";
-import { View, Text } from "react-native";
+import { View, Text, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import ItemSound from "../sound/ItemSound";
@@ -44,10 +44,19 @@ export default function ConvertedAudio() {
     <View style={styles.container}>
       <Text style={styles.title}>Audios convertis enregistrés</Text>
       {/* Liste des fichiers audio */}
-      { audioFiles.length === 0 && <Text>Aucun fichier audio enregistré</Text>}
-      {audioFiles.map((file) => (
-          <ItemSound sound={file} select={false} directory="savedConvertedSound" />
-        ))}
+      {audioFiles.length === 0 && <Text>Aucun fichier audio enregistré</Text>}
+      <FlatList
+        data={audioFiles}
+        keyExtractor={(item) => item}
+        renderItem={({ item, index }) => (
+          <ItemSound
+            sound={item}
+            select={false}
+            directory="savedConvertedSound"
+            last={index === audioFiles.length - 1}
+          />
+        )}
+      />
     </View>
   );
 }
