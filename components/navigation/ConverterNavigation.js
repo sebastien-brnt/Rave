@@ -1,11 +1,11 @@
 import React from "react";
 import Swiper from "react-native-screens-swiper";
-import AudioSelector from "./AudioSelector";
-import ModelSelector from "./ModelSelector";
-import ConvertedAudio from "./ConvertedAudio";
+import AudioSelector from "../screens/AudioSelector";
+import ModelSelector from "../screens/ModelSelector";
+import ConvertedAudioList from "../screens/ConvertedAudioList";
 
 
-export default function ConverterScreen() {
+export default function ConverterNavigation() {
     const data = [
         {
             component: () => <AudioSelector />,
@@ -16,7 +16,7 @@ export default function ConverterScreen() {
             tabLabel: "Sélection Modèle",
         },
         {
-            component: () => <ConvertedAudio />,
+            component: () => <ConvertedAudioList />,
             tabLabel: "Audios enregistrés",
         },
     ];

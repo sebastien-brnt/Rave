@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import ItemSound from "../sound/ItemSound";
 
-export default function ConvertedAudio() {
+export default function ConvertedAudioList() {
   const navigation = useNavigation();
   const [audioFiles, setAudioFiles] = useState([]);
 

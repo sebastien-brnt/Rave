@@ -11,7 +11,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 // Import des pages
 import HomeScreen from "./components/screens/HomeScreen";
 import AudioScreen from "./components/screens/AudioScreen";
-import ConverterScreen from "./components/screens/ConverterScreen";
+import ConverterNavigation from "./components/navigation/ConverterNavigation";
 
 // Import des sélecteurs
 import { isConnectedSelector } from "./components/slices/ServerSlice";
@@ -63,7 +63,7 @@ function AppNavigator() {
           />
           <Tab.Screen
             name="Conversion"
-            component={ConverterScreen}
+            component={ConverterNavigation}
             options={{
               headerTitle: "Conversion",
               tabBarIcon: ({ color, size }) => (
