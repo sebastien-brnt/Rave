@@ -1,4 +1,4 @@
-import { View, StyleSheet, Button, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 export default function CustomButton({ title, event, style, titleStyle }) {
     return (

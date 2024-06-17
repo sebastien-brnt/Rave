@@ -1,9 +1,9 @@
 import { View, StyleSheet, Text } from "react-native";
-import CustomButton from "../common/CustomButton";
-import Toast from "react-native-toast-message";
 import { useSelector, useDispatch } from "react-redux";
 import { selectModel, deselectModel, selectedModelSelector } from "../slices/ModelSlice";
 import { serverIpSelector, serverPortSelector } from "../slices/ServerSlice";
+import CustomButton from "../common/CustomButton";
+import Toast from "react-native-toast-message";
 
 export default function ItemModel({ model }) {
   const dispatch = useDispatch();

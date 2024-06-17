@@ -1,14 +1,14 @@
+import * as FileSystem from "expo-file-system";
+import * as DocumentPicker from 'expo-document-picker';
 import { View, Text, TextInput, ScrollView, FlatList } from "react-native";
 import { useState, useEffect } from "react";
-import Icon from "react-native-vector-icons/Ionicons";
-import ItemSound from "../sound/ItemSound";
 import { useSelector } from "react-redux";
-import { addSound, soundsSelector } from "../slices/SoundSlice";
-import * as DocumentPicker from 'expo-document-picker';
-import CustomButton from "../common/CustomButton";
 import { useDispatch } from "react-redux";
+import { addSound, soundsSelector } from "../slices/SoundSlice";
 import { selectSound } from "../slices/SoundSlice";
-import * as FileSystem from "expo-file-system";
+import Icon from "react-native-vector-icons/Ionicons";
+import CustomButton from "../common/CustomButton";
+import ItemSound from "../sound/ItemSound";
 
 export default function AudioSelectorScreen() {
   // Dispatch pour les actions

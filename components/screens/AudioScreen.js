@@ -1,11 +1,11 @@
+import * as FileSystem from "expo-file-system";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
+import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { Audio } from "expo-av";
-import * as FileSystem from "expo-file-system";
-import Toast from "react-native-toast-message";
-import CustomButton from "../common/CustomButton";
 import { addSound } from "../slices/SoundSlice";
-import { useDispatch } from "react-redux";
+import CustomButton from "../common/CustomButton";
+import Toast from "react-native-toast-message";
 
 export default function AudioScreen() {
   const dispatch = useDispatch();

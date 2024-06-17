@@ -1,10 +1,10 @@
 import { View, StyleSheet, TextInput, Image } from 'react-native';
-import Toast from 'react-native-toast-message';
+import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import CustomButton from '../common/CustomButton';
 import { setServerPort, setServerIp , setConnected, setDisconnected } from '../slices/ServerSlice';
+import CustomButton from '../common/CustomButton';
+import Toast from 'react-native-toast-message';
 
 // Composant principal exporté par défaut
 export default function ConnexionScreen() {

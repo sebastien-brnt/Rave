@@ -1,11 +1,11 @@
+import * as FileSystem from "expo-file-system";
 import { View, StyleSheet, Text } from "react-native";
-import CustomButton from "../common/CustomButton";
 import { useSelector, useDispatch } from "react-redux";
 import { selectSound, deselectSound, selectedSoundSelector, removeSound } from "../slices/SoundSlice"; // Correction du nom de slice
-import { Audio } from "expo-av";
-import * as FileSystem from "expo-file-system";
-import Icon from "react-native-vector-icons/Ionicons";
 import { removeConvertedSound } from "../slices/ConvertedSlice";
+import { Audio } from "expo-av";
+import Icon from "react-native-vector-icons/Ionicons";
+import CustomButton from "../common/CustomButton";
 
 export default function ItemSound({
   sound,
