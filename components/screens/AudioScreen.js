@@ -201,6 +201,11 @@ export default function AudioScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Affichage d'un message d'enregistremebt */}
+      {recording && (
+        <Text style={styles.recordingText}>Enregistrement en cours ...</Text>
+      )}
+
       {/* Affichage du bouton de lecture si un audio a été enregistré */}
       {recordingUri && (
         <CustomButton title="Lire l'enregistrement" event={playSound} />
@@ -267,4 +272,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  recordingText: {
+    textAlign: "center",
+    fontWeight: "bold",
+    marginBottom: 20,
+  }
 });
