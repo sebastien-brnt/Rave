@@ -3,9 +3,17 @@ import { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import ItemSound from "../sound/ItemSound";
 import { useSelector } from "react-redux";
-import { soundsSelector } from "../slices/SoundSlice";
+import { addSound, soundsSelector } from "../slices/SoundSlice";
+import * as DocumentPicker from 'expo-document-picker';
+import CustomButton from "../common/CustomButton";
+import { useDispatch } from "react-redux";
+import { selectSound } from "../slices/SoundSlice";
+import * as FileSystem from "expo-file-system";
 
 export default function AudioSelectorScreen() {
+  // Dispatch pour les actions
+  const dispatch = useDispatch();
+
   // State pour la recherche
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState(null);
@@ -27,6 +35,40 @@ export default function AudioSelectorScreen() {
     setSearchResult(filteredFiles[0]);
   }
 
+  // Fonction pour sélectionner un fichier audio depuis le téléphone
+  const selectAudioFromPhone = async () => {
+    try {
+      const { assets } = await DocumentPicker.getDocumentAsync({
+        type: 'audio/*',
+        copyToCacheDirectory: true,
+      });
+
+      if (assets) {
+        // Déplacement du fichier dans le dossier recordings
+        await FileSystem.moveAsync({
+          from: assets[0].uri,
+          to: `${FileSystem.documentDirectory}recordings/${assets[0].name}`,
+        });
+
+        // Récupération du nom du fichier sans l'extension
+        const name = assets[0].name.replace('.m4a', '').replace('.mp3', '').replace('.wav', '');
+
+        // Création de l'objet son
+        const newSound = {
+          fileName: assets[0].name,
+          name: name,
+          uri: `${FileSystem.documentDirectory}recordings/${assets[0].name}`,
+        };
+
+        // Ajout dans le store et sélection du son
+        dispatch(addSound(newSound));
+        dispatch(selectSound(newSound));
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sélection de l\'audio', error);
+    }
+  };
+
   // Recherche des fichiers audio
   useEffect(() => {
     searchAudio();
@@ -36,6 +78,10 @@ export default function AudioSelectorScreen() {
     <ScrollView>
       <View style={styles.container}>
         <Text style={styles.title}>Sélection de l'audio</Text>
+
+        {/* Bouton pour sélectionner un fichier audio depuis le téléphone */}
+        <Text style={styles.titleSecond}>Ajout d'un audio du téléphonne</Text>
+        <CustomButton title="Ajouter un fichier" event={selectAudioFromPhone} />
 
         {/* Barre de recherche */}
         <Text style={styles.titleSecond}>Rechercher un audio enregistré</Text>
