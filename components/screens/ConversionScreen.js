@@ -1,10 +1,21 @@
 import * as FileSystem from "expo-file-system";
-import { View, Text, TextInput, FlatList, ScrollView } from "react-native";
+import {
+  ActivityIndicator,
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  ScrollView,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { selectedSoundSelector } from "../slices/SoundSlice";
-import { isConnectedSelector, serverIpSelector, serverPortSelector } from "../slices/ServerSlice";
+import {
+  isConnectedSelector,
+  serverIpSelector,
+  serverPortSelector,
+} from "../slices/ServerSlice";
 import { addConvertedSound } from "../slices/ConvertedSlice";
 import CustomButton from "../common/CustomButton";
 import ItemModel from "../models/ItemModel";
@@ -20,6 +31,7 @@ export default function ConversionScreen() {
   const [fileName, setFileName] = useState("");
   const [models, setModels] = useState([]);
   const [soundConverted, setSoundConverted] = useState(false);
+  const [convertLoading, setConvertLoading] = useState(false);
 
   // Récupération des informations du serveur
   const isConnected = useSelector(isConnectedSelector);
@@ -98,6 +110,7 @@ export default function ConversionScreen() {
   async function convertSound() {
     // Mise à jour du state pour indiquer que l'audio n'est pas encore converti
     setSoundConverted(false);
+    setConvertLoading(true);
 
     try {
       // Envoi du fichier audio au serveur
@@ -108,6 +121,7 @@ export default function ConversionScreen() {
 
       // Mise à jour du state pour indiquer que l'audio a été converti
       setSoundConverted(true);
+      setConvertLoading(false);
 
       // Affichage du message de succès
       Toast.show({
@@ -201,10 +215,16 @@ export default function ConversionScreen() {
       });
 
       // Ajout du son dans le store
-      dispatch(addConvertedSound({ name: fileName, fileName: cleanFileName + ".wav", uri: fileUri }));
+      dispatch(
+        addConvertedSound({
+          name: fileName,
+          fileName: cleanFileName + ".wav",
+          uri: fileUri,
+        })
+      );
 
       // Réinitialisation du nom du fichier après la sauvegarde
-      setFileName(""); 
+      setFileName("");
     } catch (error) {
       console.error("Error saving recording:", error);
     }
@@ -262,35 +282,48 @@ export default function ConversionScreen() {
           <Text>Aucun modèle disponible</Text>
         )}
 
-        <Text style={styles.titleSecond}>Dernier audio converti</Text>
-        {/* Si il y a un audio converti */}
-        {soundConverted ? (
-          <View>
-            <View style={styles.soundOrigin}>
-              <ItemSound
-                sound={"sound.wav"}
-                actions={false}
-                last={true}
-                converted={true}
-              />
+        {convertLoading ? (
+          <>
+            <View style={styles.loading}>
+              <ActivityIndicator size="large" />
+              <Text style={styles.loadingText}>Chargement en cours...</Text>
             </View>
-
-            {/* Enregistrement de l'audio converti */}
-            <Text style={styles.titleSecond}>Enregistrer l'audio converti</Text>
-            <TextInput
-              placeholder="Nom du fichier"
-              style={styles.fileName}
-              onChangeText={setFileName}
-              value={fileName}
-            />
-            <CustomButton
-              title="Enregistrer l'audio converti"
-              event={() => saveConvertedSound()}
-            />
-          </View>
+          </>
         ) : (
-          // Si il n'y a pas d'audio converti
-          <Text>Aucun audio disponible</Text>
+          <>
+            <Text style={styles.titleSecond}>Dernier audio converti</Text>
+            {/* Si il y a un audio converti */}
+            {soundConverted ? (
+              <View>
+                <View style={styles.soundOrigin}>
+                  <ItemSound
+                    sound={"sound.wav"}
+                    actions={false}
+                    last={true}
+                    converted={true}
+                  />
+                </View>
+
+                {/* Enregistrement de l'audio converti */}
+                <Text style={styles.titleSecond}>
+                  Enregistrer l'audio converti
+                </Text>
+                <TextInput
+                  placeholder="Nom du fichier"
+                  style={styles.fileName}
+                  onChangeText={setFileName}
+                  value={fileName}
+                />
+                <CustomButton
+                  title="Enregistrer l'audio converti"
+                  event={() => saveConvertedSound()}
+                />
+              </View>
+            ) : (
+              // Si il n'y a pas d'audio converti
+              <Text>Aucun audio disponible</Text>
+            )}
+          </>
         )}
       </View>
     </ScrollView>
@@ -329,4 +362,13 @@ const styles = {
     paddingHorizontal: 10,
     borderRadius: 10,
   },
+  loading: {
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  loadingText: {
+    marginLeft: 10,
+  }
 };
