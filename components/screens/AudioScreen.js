@@ -1,5 +1,5 @@
 import * as FileSystem from "expo-file-system";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Alert } from "react-native";
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { Audio } from "expo-av";
@@ -18,6 +18,13 @@ export default function AudioScreen() {
   // Fonction pour démarrer l'enregistrement
   async function startRecording() {
     console.log("Start recording...");
+
+    // Vérification qu'un enregistrement n'est pas déjà en cours
+    if (recording) {
+      console.log("Recording already in progress");
+      return;
+    }
+
     try {
       // Demander la permission d'accéder au micro si nécessaire
       if (permissionResponse?.status !== "granted") {
@@ -103,12 +110,9 @@ export default function AudioScreen() {
   // Fonction de sauvegarde de l'audio dans le téléphone
   async function saveRecording() {
     if (!recordingUri || !fileName) {
+      // Affichage d'une alerte si aucun enregistrement ou nom de fichier
       console.log("Saving error, no record or file name");
-      Toast.show({
-        type: "error",
-        text1: "Erreur d'enregistrement",
-        text2: "Aucun audio ou nom de fichier",
-      });
+      Alert.alert("Erreur d'enregistrement", "Veuillez enregistrer un audio et saisir un nom de fichier");
       return;
     }
 
@@ -131,11 +135,8 @@ export default function AudioScreen() {
       // Vérification de l'existence du fichier
       const fileInfo = await FileSystem.getInfoAsync(fileUri);
       if (fileInfo.exists) {
-        Toast.show({
-          type: "error",
-          text1: "Erreur d'enregistrement",
-          text2: "Le nom du fichier est déjà utilisé",
-        });
+        // Affichage d'une alerte si le fichier existe déjà
+        Alert.alert("Erreur d'enregistrement", "Le nom du fichier est déjà utilisé");
         return;
       }
 
@@ -150,8 +151,13 @@ export default function AudioScreen() {
 
       setRecordingUri(null); // Réinitialise l'URI de l'enregistrement après la sauvegarde
       setFileName(""); // Réinitialise le nom du fichier après la sauvegarde
+
+      // Affichage d'une alerte de succès
+      Alert.alert("Enregistrement sauvegardé", "L'audio a été sauvegardé avec succès");
+      
     } catch (error) {
       console.error("Error saving recording:", error);
+      Alert.alert("Erreur d'enregistrement", "Une erreur est survenue lors de la sauvegarde de l'audio");
     }
   }
 

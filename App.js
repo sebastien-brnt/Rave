@@ -45,7 +45,7 @@ function AppNavigator() {
             name="Audio"
             component={AudioScreen}
             options={{
-              headerTitle: "Audio",
+              headerTitle: "Enregistrement",
               tabBarIcon: ({ color, size }) => (
                 <Icon name="playcircleo" size={size} color={color} />
               ),
@@ -55,7 +55,7 @@ function AppNavigator() {
             name="Conversion"
             component={ConverterNavigation}
             options={{
-              headerTitle: "Conversion",
+              headerTitle: "Conversion RAVE",
               tabBarIcon: ({ color, size }) => (
                 <Icon name="retweet" size={size} color={color} />
               ),

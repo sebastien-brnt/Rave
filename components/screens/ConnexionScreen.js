@@ -33,7 +33,7 @@ export default function ConnexionScreen() {
                 return false;
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.log('Error:', error);
             return false;
         }
     }
