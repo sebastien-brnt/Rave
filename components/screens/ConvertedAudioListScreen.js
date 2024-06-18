@@ -13,7 +13,7 @@ export default function ConvertedAudioListScreen() {
       {audioFiles && audioFiles.length === 0 && <Text>Aucun fichier audio enregistré</Text>}
       <FlatList
         data={audioFiles}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.fileName}
         renderItem={({ item, index }) => (
           <ItemSound
             sound={item}

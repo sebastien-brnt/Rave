@@ -1,26 +1,14 @@
 import * as FileSystem from "expo-file-system";
-import {
-  ActivityIndicator,
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  ScrollView,
-} from "react-native";
+import { ActivityIndicator, View, Text, TextInput, FlatList, ScrollView, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { selectedSoundSelector } from "../slices/SoundSlice";
-import {
-  isConnectedSelector,
-  serverIpSelector,
-  serverPortSelector,
-} from "../slices/ServerSlice";
+import { isConnectedSelector, serverIpSelector, serverPortSelector } from "../slices/ServerSlice";
 import { addConvertedSound } from "../slices/ConvertedSlice";
 import CustomButton from "../common/CustomButton";
 import ItemModel from "../models/ItemModel";
 import ItemSound from "../sound/ItemSound";
-import Toast from "react-native-toast-message";
 
 export default function ConversionScreen() {
   const navigation = useNavigation();
@@ -88,21 +76,11 @@ export default function ConversionScreen() {
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.text();
 
-      // Affichage du message de succès si le fichier a bien été uploadé
-      console.log("Response from server:", data);
-      Toast.show({
-        type: "success",
-        text1: "Fichier Uploadé",
-        text2: `Le fichier ${fileName} a été uploadé avec succès`,
-      });
     } catch (error) {
+
       // Affichage du message d'erreur si le fichier n'a pas pu être uploadé
       console.error("Error uploading file:", error);
-      Toast.show({
-        type: "error",
-        text1: "Erreur",
-        text2: `Le fichier ${fileName} n'a pas pu être uploadé`,
-      });
+      Alert.alert("Erreur", "Le fichier " + fileName + " n'a pas pu être uploadé");
     }
   };
 
@@ -124,22 +102,19 @@ export default function ConversionScreen() {
       setConvertLoading(false);
 
       // Affichage du message de succès
-      Toast.show({
-        type: "success",
-        text1: "Audio converti",
-        text2: "L'audio a été converti avec succès",
-      });
+      Alert.alert("Succès", "L'audio a été converti avec succès");
+
     } catch (error) {
+      // Affichage du message d'erreur si l'audio n'a pas pu être converti
       console.error("Error converting sound:", error);
-      Toast.show({
-        type: "error",
-        text1: "Erreur de conversion",
-        text2: "Une erreur est survenue lors de la conversion de l'audio",
-      });
+      Alert.alert("Erreur", "Une erreur est survenue lors de la conversion de l'audio");
+
     }
   }
 
+  // Fonction pour récupérer les modèles disponibles sur le serveur
   const getModels = async () => {
+    // Récupération des modèles disponibles sur le serveur
     try {
       const response = await fetch(
         `http://${serverIp}:${serverPort}/getmodels`,
@@ -147,23 +122,25 @@ export default function ConversionScreen() {
           method: "GET",
         }
       );
+      
+
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
+
+      // Mise à jour du state avec les modèles récupérés
       setModels(data.models);
+
     } catch (error) {
+      // Affichage du message d'erreur si les modèles n'ont pas pu être récupérés
       console.error("Error fetching models:", error);
+      Alert.alert("Erreur", "Une erreur est survenue lors de la récupération des modèles");
     }
   };
 
   // Fonction de sauvegarde de l'audio converti dans le téléphone
   async function saveConvertedSound() {
     if (!fileName) {
-      console.log("Saving error, no record or file name");
-      Toast.show({
-        type: "error",
-        text1: "Erreur d'enregistrement",
-        text2: "Aucun audio ou nom de fichier",
-      });
+      Alert.alert("Erreur d'enregistrement", "Veuillez entrer un nom de fichier");
       return;
     }
 
@@ -174,11 +151,7 @@ export default function ConversionScreen() {
       // Vérification de l'existence du fichier
       const convertedFileInfo = await FileSystem.getInfoAsync(convertedFileUri);
       if (!convertedFileInfo.exists) {
-        Toast.show({
-          type: "error",
-          text1: "Erreur d'enregistrement",
-          text2: "Aucun audio converti",
-        });
+        Alert.alert("Erreur d'enregistrement", "Aucun audio converti");
         return;
       }
 
@@ -200,11 +173,7 @@ export default function ConversionScreen() {
       // Vérification de l'existence du fichier
       const fileInfo = await FileSystem.getInfoAsync(fileUri);
       if (fileInfo.exists) {
-        Toast.show({
-          type: "error",
-          text1: "Erreur d'enregistrement",
-          text2: "Le nom du fichier est déjà utilisé",
-        });
+        Alert.alert("Erreur d'enregistrement", "Le nom du fichier est déjà utilisé");
         return;
       }
 
@@ -225,8 +194,14 @@ export default function ConversionScreen() {
 
       // Réinitialisation du nom du fichier après la sauvegarde
       setFileName("");
+
+      // Affichage du message de succès
+      Alert.alert("Succès", "L'audio " + fileName + " a été enregistré avec succès");
+
     } catch (error) {
+      // Affichage du message d'erreur si le fichier n'a pas pu être enregistré
       console.error("Error saving recording:", error);
+      Alert.alert("Erreur d'enregistrement", "Une erreur est survenue lors de l'enregistrement de l'audio converti");
     }
   }
 
