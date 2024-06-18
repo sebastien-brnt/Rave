@@ -140,6 +140,7 @@ export default function ConversionScreen() {
   // Fonction de sauvegarde de l'audio converti dans le téléphone
   async function saveConvertedSound() {
     if (!fileName) {
+      // Affichage du message d'erreur si le nom du fichier n'est pas renseigné
       Alert.alert("Erreur d'enregistrement", "Veuillez entrer un nom de fichier");
       return;
     }
@@ -225,10 +226,10 @@ export default function ConversionScreen() {
       <View style={styles.container}>
         <Text style={styles.title}>Conversion de l'audio</Text>
 
-        {/* Récapitulatif de l'audio d'origine et celui converti */}
+        {/* Affichage de l'audio sélectioné */}
         <Text style={styles.titleSecond}>Son sélectionné</Text>
         {selectedSound ? (
-          <View style={styles.soundOrigin}>
+          <View style={styles.soundItem}>
             <ItemSound sound={selectedSound} actions={false} last={true} />
           </View>
         ) : (
@@ -257,9 +258,11 @@ export default function ConversionScreen() {
           <Text>Aucun modèle disponible</Text>
         )}
 
+        {/* Si le chargement de l'audio est en cours on affiche un loader sinon les informations */}
         {convertLoading ? (
           <>
             <View style={styles.loading}>
+              {/* Loading */}
               <ActivityIndicator size="large" />
               <Text style={styles.loadingText}>Chargement en cours...</Text>
             </View>
@@ -270,7 +273,8 @@ export default function ConversionScreen() {
             {/* Si il y a un audio converti */}
             {soundConverted ? (
               <View>
-                <View style={styles.soundOrigin}>
+                <View style={styles.soundItem}>
+                  {/* Son transformé */}
                   <ItemSound
                     sound={"sound.wav"}
                     actions={false}
@@ -331,7 +335,7 @@ const styles = {
     paddingVertical: 13,
     borderRadius: 10,
   },
-  soundOrigin: {
+  soundItem: {
     backgroundColor: "#ddd",
     paddingVertical: 5,
     paddingHorizontal: 10,
