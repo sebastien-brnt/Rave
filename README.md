@@ -38,7 +38,8 @@ Pour terminer, scannez le QR code affiché dans votre terminal avec l'applicatio
 
 ## Utilisation depuis le store Expo Go
 L'application est disponible sur le store Expo Go. Pour l'utiliser, il suffit de scanner le QR code suivant avec l'application Expo Go sur votre smartphone :
-<br><img src="/screenshots/expo-published-app-qr-code.png" alt="QR Code de l'application" title="QR Code de l'application" width="200">
+<br><br>
+<img src="/screenshots/expo-published-app-qr-code.png" alt="QR Code de l'application" title="QR Code de l'application" width="200">
 
 Ou cliquez sur ce lien pour retrouver le QR code:
 [QR Code](https://expo.dev/preview/update?message=Icon%20and%20splash&updateRuntimeVersion=1.0.0&createdAt=2024-06-19T18%3A51%3A41.253Z&slug=exp&projectId=318c409c-207a-440e-8855-539c729ecb75&group=d4797db7-600d-4153-99b8-79886c4e81ba)
