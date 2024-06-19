@@ -6,6 +6,9 @@ import ConvertedAudioListScreen from "../screens/ConvertedAudioListScreen";
 
 
 export default function ConverterNavigation() {
+    // Logique de navigation de ConverterNavigation :
+    //    - 3 écrans : AudioSelectorScreen, ConversionScreen, ConvertedAudioListScreen
+
     // Navigation entre les écrans de sélection audio, conversion audio et liste des audios convertis
     const data = [
         {
