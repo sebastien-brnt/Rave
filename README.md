@@ -42,7 +42,7 @@ L'application est disponible sur le store Expo Go. Pour l'utiliser, il suffit de
 <img src="/screenshots/expo-published-app-qr-code.png" alt="QR Code de l'application" title="QR Code de l'application" width="200">
 
 Ou cliquez sur ce lien pour retrouver le QR code:
-[QR Code](https://expo.dev/preview/update?message=Icon%20and%20splash&updateRuntimeVersion=1.0.0&createdAt=2024-06-19T18%3A51%3A41.253Z&slug=exp&projectId=318c409c-207a-440e-8855-539c729ecb75&group=d4797db7-600d-4153-99b8-79886c4e81ba)
+[QR Code](https://expo.dev/preview/update?message=Production%20version&updateRuntimeVersion=1.0.0&createdAt=2024-06-23T16%3A12%3A00.236Z&slug=exp&projectId=318c409c-207a-440e-8855-539c729ecb75&group=6b7c4cea-d549-4ed5-9459-b32bd3d6768b)
 
 ## Auteur
 - [Sébastien Burnet](https://github.com/sebastien-brnt)
