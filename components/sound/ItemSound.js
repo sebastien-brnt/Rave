@@ -6,6 +6,7 @@ import { removeConvertedSound } from "../slices/ConvertedSlice";
 import { Audio } from "expo-av";
 import Icon from "react-native-vector-icons/Ionicons";
 import CustomButton from "../common/CustomButton";
+import { useEffect, useState } from "react";
 
 export default function ItemSound({
   sound,
@@ -20,11 +21,13 @@ export default function ItemSound({
 }) {
   const dispatch = useDispatch();
   const selectedSound = useSelector(selectedSoundSelector);
+  const [playbackSound, setPlaybackSound] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Fonction pour lire un fichier audio
   async function playAudio(file) {
     let path = "";
-    if (converted === true) {
+    if (converted) {
       path = `${FileSystem.documentDirectory}convertedSound/${file}`;
     } else {
       path = `${FileSystem.documentDirectory}${directory}/${file.fileName}`;
@@ -35,12 +38,45 @@ export default function ItemSound({
       playsInSilentModeIOS: true, // Jouer le son en mode silencieux sur iOS
     });
 
-    const { sound: playbackSound } = await Audio.Sound.createAsync({
-      uri: path,
-    });
+    if (playbackSound) {
+      if (isPlaying) {
+        await playbackSound.pauseAsync();
+        setIsPlaying(false);
+      } else {
+        await playbackSound.playAsync();
+        setIsPlaying(true);
+      }
+    } else {
+      const { sound } = await Audio.Sound.createAsync({
+        uri: path,
+      });
+      setPlaybackSound(sound);
+      await sound.playAsync();
+      setIsPlaying(true);
 
-    await playbackSound.playAsync();
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          resetAudioState();
+        }
+      });
+    }
   }
+
+  // Fonction pour réinitialiser l'état de l'audio
+  function resetAudioState() {
+    setPlaybackSound(null);
+    setIsPlaying(false);
+  };
+
+  // Effet pour décharger le son lorsqu'il n'est plus utilisé
+  useEffect(() => {
+    return playbackSound
+      ? () => {
+          playbackSound.unloadAsync();
+        }
+      : undefined;
+  }, [playbackSound]);
+
 
   // Fonction pour sélectionner ou désélectionner un son
   async function handleSelectSound(sound) {
@@ -79,7 +115,7 @@ export default function ItemSound({
       }
       <View style={styles.actions}>
         <Icon
-          name="play-circle-outline"
+          name={isPlaying ? 'pause-circle-sharp' : 'play-circle-outline' }
           size={25}
           color={"#6A5ACD"}
           onPress={() => playAudio(sound)}

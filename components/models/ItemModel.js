@@ -23,7 +23,7 @@ export default function ItemModel({ model }) {
       // Envoi de la requête pour sélectionner le modèle
       const response = await fetch( `http://${serverIp}:${serverPort}/selectModel/${modelName}`,
         {
-          method: "POST",
+          method: "GET",
         }
       );
 
